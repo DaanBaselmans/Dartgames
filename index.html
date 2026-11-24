@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enquête bij de wedstrijd: nieuwe fans RKC Waalwijk</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Oswald voor sportieve koppen -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+    <!-- QRCode.js bibliotheek voor dynamische scanbare QR-codes -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rkc: {
+                            yellow: '#FFD100',
+                            yellowHover: '#F5C400',
+                            blue: '#0038A8',
+                            blueDark: '#002878',
+                            navy: '#001A4D',
+                            light: '#F4F7FC'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Oswald', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styling voor RKC stadion sfeer en print-poster */
+        .rkc-stripes {
+            background: repeating-linear-gradient(
+                -45deg,
+                #0038A8,
+                #0038A8 12px,
+                #002878 12px,
+                #002878 24px
+            );
+        }
+        .rkc-yellow-stripe {
+            background: linear-gradient(90deg, #FFD100 0%, #F5C400 100%);
+        }
+        /* Custom radio & checkbox kaarten */
+        .option-card input:checked + .option-box {
+            background-color: #0038A8;
+            color: #FFFFFF;
+            border-color: #0038A8;
+            box-shadow: 0 4px 12px rgba(0, 56, 168, 0.25);
+        }
+        .option-card input:checked + .option-box .option-indicator {
+            background-color: #FFD100;
+            border-color: #FFD100;
+            color: #001A4D;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-poster, #printable-poster * {
+                visibility: visible;
+            }
+            #printable-poster {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background: #0038A8 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                display: flex !important;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 2rem;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-rkc-light text-slate-900 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Top Navigatie & RKC Header -->
+    <header class="rkc-stripes text-white sticky top-0 z-40 shadow-lg border-b-4 border-rkc-yellow">
+        <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+            <!-- RKC Club Badge & Titel -->
+            <div class="flex items-center gap-3">
+                <!-- Inline SVG Schild in RKC stijl -->
+                <div class="w-11 h-12 shrink-0 flex items-center justify-center drop-shadow">
+                    <svg viewBox="0 0 100 115" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 10 H90 V58 C90 85 50 106 50 106 C50 106 10 85 10 58 Z" fill="#FFD100" stroke="#FFFFFF" stroke-width="5"/>
+                        <path d="M18 18 H50 V95 C34 86 18 71 18 56 Z" fill="#0038A8"/>
+                        <path d="M50 18 H82 V56 C82 71 66 86 50 95 Z" fill="#FFD100"/>
+                        <rect x="20" y="34" width="60" height="24" rx="4" fill="#001A4D" stroke="#FFFFFF" stroke-width="2"/>
+                        <text x="50" y="51" font-family="Oswald, sans-serif" font-weight="700" font-size="18" fill="#FFD100" text-anchor="middle" letter-spacing="1">RKC</text>
+                        <text x="50" y="74" font-family="Inter, sans-serif" font-weight="800" font-size="8.5" fill="#FFFFFF" stroke="#001A4D" stroke-width="2.5" paint-order="stroke" text-anchor="middle">WAALWIJK</text>
+                    </svg>
+                </div>
+                <div>
+                    <span class="inline-block bg-rkc-yellow text-rkc-navy text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full mb-0.5">
+                        Mandemakers Stadion
+                    </span>
+                    <h1 class="font-display text-lg sm:text-xl font-bold uppercase tracking-wide leading-tight text-white">
+                        RKC Waalwijk Fan Onderzoek
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Actieknoppen voor QR & Onderzoekers -->
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="openQrModal()" class="bg-rkc-yellow hover:bg-rkc-yellowHover text-rkc-navy font-bold text-xs sm:text-sm px-3 py-2 rounded-xl shadow flex items-center gap-1.5 transition active:scale-95">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h6v6H3V3zm12 0h6v6h-6V3zM3 15h6v6H3v-6zm13 0h2v2h-2v-2zm3 0h2v2h-2v-2zm-3 3h2v3h-2v-3zm3 2h2v1h-2v-1zm-5-5h2v2h-2v-2z"/>
+                    </svg>
+                    <span>QR-code</span>
+                </button>
+                <button type="button" onclick="toggleAdminView()" id="adminToggleBtn" class="bg-rkc-navy/90 hover:bg-rkc-navy text-white border border-white/25 font-semibold text-xs sm:text-sm px-3 py-2 rounded-xl flex items-center gap-1.5 transition active:scale-95">
+                    <svg class="w-4 h-4 text-rkc-yellow" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span class="hidden sm:inline">Resultaten</span>
+                    <span id="responseBadge" class="bg-rkc-yellow text-rkc-navy text-xs font-extrabold px-1.5 py-0.2 rounded-full">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Voortgangsbalk -->
+        <div id="progressBarContainer" class="w-full bg-rkc-navy h-2">
+            <div id="progressBar" class="rkc-yellow-stripe h-2 transition-all duration-300" style="width: 5%;"></div>
+        </div>
+    </header>
+
+    <!-- Hoofdcontent -->
+    <main class="flex-1 max-w-3xl w-full mx-auto px-4 py-6 sm:py-8">
+
+        <!-- Melding / Toast Banner (vervangt alert()) -->
+        <div id="toastBanner" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 bg-rkc-navy text-white border-2 border-rkc-yellow px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 max-w-md w-[90%]">
+            <span class="w-6 h-6 rounded-full bg-rkc-yellow text-rkc-navy font-extrabold flex items-center justify-center shrink-0">!</span>
+            <p id="toastMessage" class="text-sm font-medium"></p>
+        </div>
+
+        <!-- VIEW 1: DE ENQUÊTE -->
+        <div id="surveyView">
+            <!-- Introductiekaart -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200/80 overflow-hidden mb-6">
+                <div class="bg-rkc-blue px-6 py-5 text-white relative overflow-hidden">
+                    <div class="relative z-10">
+                        <span class="inline-block bg-rkc-yellow text-rkc-navy text-xs font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-lg mb-2">
+                            Wedstrijddag Enquête • ± 3 minuten
+                        </span>
+                        <h2 class="font-display text-2xl sm:text-3xl font-bold uppercase tracking-tight text-white">
+                            Enquête bij de wedstrijd: nieuwe fans RKC Waalwijk
+                        </h2>
+                        <p class="text-blue-100 text-sm sm:text-base mt-2 leading-relaxed">
+                            Welkom in het Mandemakers Stadion! Jouw mening helpt RKC Waalwijk om wedstrijddagen en fanacties nog beter te maken. Vul de vragen hieronder in.
+                        </p>
+                    </div>
+                    <!-- Decoratieve cirkel -->
+                    <div class="w-40 h-40 rounded-full bg-rkc-yellow/10 absolute -right-10 -bottom-12 pointer-events-none"></div>
+                </div>
+                <div class="px-6 py-3 bg-rkc-yellow/15 border-t border-rkc-yellow/30 flex items-center justify-between text-xs sm:text-sm text-rkc-navy font-semibold">
+                    <span>Voortgang: <span id="progressText">0 van 21 vragen beantwoord</span></span>
+                    <span class="text-rkc-blue">Geel &amp; Blauw</span>
+                </div>
+            </div>
+
+            <!-- Enquête Formulier -->
+            <form id="rkcSurveyForm" class="space-y-8" novalidate>
+
+                <!-- ========================================== -->
+                <!-- SECTIE 1: OVER JOU (Vraag 1 t/m 6)         -->
+                <!-- ========================================== -->
+                <section class="bg-white rounded-2xl shadow-md border border-slate-200/80 overflow-hidden">
+                    <div class="bg-rkc-navy px-6 py-4 flex items-center justify-between border-b-4 border-rkc-yellow">
+                        <h3 class="font-display text-xl font-bold uppercase tracking-wide text-white">
+                            Over jou
+                        </h3>
+                        <span class="text-xs font-bold bg-rkc-yellow text-rkc-navy px-2.5 py-1 rounded-full">Vraag 1 – 6</span>
+                    </div>
+
+                    <div class="p-5 sm:p-6 space-y-6">
+                        <!-- Vraag 1 -->
+                        <div class="question-block" data-q="1">
+                            <label for="q1" class="block text-base sm:text-lg font-bold text-rkc-navy mb-2">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">1</span>
+                                Waar woon je?
+                            </label>
+                            <input type="text" id="q1" name="q1" placeholder="Bijv. Waalwijk, Drunen, Kaatsheuvel..." class="track-input w-full rounded-xl border-2 border-slate-200 focus:border-rkc-blue focus:ring-4 focus:ring-rkc-blue/10 px-4 py-3 text-base outline-none transition">
+                        </div>
+
+                        <!-- Vraag 2 -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="2">
+                            <label for="q2" class="block text-base sm:text-lg font-bold text-rkc-navy mb-2">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">2</span>
+                                Woon je daar al lang?
+                            </label>
+                            <input type="text" id="q2" name="q2" placeholder="Bijv. Mijn hele leven, 5 jaar, sinds kort..." class="track-input w-full rounded-xl border-2 border-slate-200 focus:border-rkc-blue focus:ring-4 focus:ring-rkc-blue/10 px-4 py-3 text-base outline-none transition">
+                        </div>
+
+                        <!-- Vraag 3 -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="3">
+                            <p class="text-base sm:text-lg font-bold text-rkc-navy mb-3">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">3</span>
+                                Studeer je, werk je, of zit je nog op school?
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q3" value="Ik studeer" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Ik studeer</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q3" value="Ik werk" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Ik werk</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q3" value="Ik zit nog op school" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Ik zit nog op school</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q3" value="Anders" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Anders</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Vraag 4 -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="4">
+                            <p class="text-base sm:text-lg font-bold text-rkc-navy mb-3">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">4</span>
+                                Met wie ben je hier vandaag?
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q4" value="Alleen" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Alleen</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q4" value="Met vrienden" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Met vrienden</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q4" value="Met familie of ouders" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Met familie of ouders</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q4" value="Met collega's of teamgenoten" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Met collega's of teamgenoten</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer sm:col-span-2">
+                                    <input type="radio" name="q4" value="Anders" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Anders</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Vraag 5 -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="5">
+                            <p class="text-base sm:text-lg font-bold text-rkc-navy mb-3">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">5</span>
+                                Voetbal je zelf, of heb je vroeger gevoetbald?
+                            </p>
+                            <div class="grid grid-cols-1 gap-2.5">
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q5" value="Ja, ik voetbal nu nog" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Ja, ik voetbal nu nog</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q5" value="Ja, ik heb vroeger gevoetbald" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Ja, ik heb vroeger gevoetbald</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q5" value="Nee, nooit gevoetbald" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Nee, nooit gevoetbald</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Vraag 6 -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="6">
+                            <label for="q6" class="block text-base sm:text-lg font-bold text-rkc-navy mb-2">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">6</span>
+                                Hoe ben je eigenlijk bij RKC terechtgekomen? Hoe heb je de club leren kennen?
+                            </label>
+                            <textarea id="q6" name="q6" rows="3" placeholder="Typ hier je antwoord..." class="track-input w-full rounded-xl border-2 border-slate-200 focus:border-rkc-blue focus:ring-4 focus:ring-rkc-blue/10 px-4 py-3 text-base outline-none transition"></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- FILTERVRAAG VOOR ROUTING (Zonder de 21 vragen te wijzigen) -->
+                <div class="bg-rkc-blue rounded-2xl shadow-lg p-5 sm:p-6 text-white border-2 border-rkc-yellow">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="bg-rkc-yellow text-rkc-navy text-xs font-extrabold uppercase px-2.5 py-0.5 rounded-md">Snelle selectie</span>
+                        <span class="text-blue-200 text-xs font-medium">Kies jouw type kaartje om direct naar de juiste vragen te gaan</span>
+                    </div>
+                    <p class="font-display text-xl font-bold uppercase tracking-wide mb-4">
+                        Heb je een seizoenkaart of een los kaartje?
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button type="button" onclick="setTicketRoute('seizoenkaart')" id="btn-route-seizoenkaart" class="route-btn bg-white text-rkc-navy font-bold py-3 px-4 rounded-xl border-2 border-white shadow hover:bg-rkc-yellow transition text-sm sm:text-base flex items-center justify-center gap-2">
+                            <span>🎫 Ik heb een seizoenkaart</span>
+                        </button>
+                        <button type="button" onclick="setTicketRoute('los')" id="btn-route-los" class="route-btn bg-white text-rkc-navy font-bold py-3 px-4 rounded-xl border-2 border-white shadow hover:bg-rkc-yellow transition text-sm sm:text-base flex items-center justify-center gap-2">
+                            <span>🎟️ Ik heb een los kaartje</span>
+                        </button>
+                        <button type="button" onclick="setTicketRoute('beide')" id="btn-route-beide" class="route-btn bg-rkc-yellow text-rkc-navy font-extrabold py-3 px-4 rounded-xl border-2 border-rkc-yellow shadow transition text-sm sm:text-base flex items-center justify-center gap-2">
+                            <span>📋 Toon alle secties</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ========================================== -->
+                <!-- SECTIE 2: SEIZOENKAARTHOUDERS (Vraag 7-11)  -->
+                <!-- ========================================== -->
+                <section id="section-seizoenkaart" class="bg-white rounded-2xl shadow-md border border-slate-200/80 overflow-hidden transition-all">
+                    <div class="bg-rkc-blue px-6 py-4 flex items-center justify-between border-b-4 border-rkc-yellow">
+                        <h3 class="font-display text-xl font-bold uppercase tracking-wide text-white">
+                            Seizoenkaarthouders
+                        </h3>
+                        <span class="text-xs font-bold bg-rkc-yellow text-rkc-navy px-2.5 py-1 rounded-full">Vraag 7 – 11</span>
+                    </div>
+
+                    <div class="p-5 sm:p-6 space-y-6">
+                        <!-- Vraag 7 -->
+                        <div class="question-block" data-q="7">
+                            <p class="text-base sm:text-lg font-bold text-rkc-navy mb-2">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">7</span>
+                                Wat waren voor jou de twee belangrijkste redenen om een seizoenkaart te nemen?
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label for="q7_1" class="block text-xs font-bold uppercase text-slate-500 mb-1">Reden 1</label>
+                                    <input type="text" id="q7_1" name="q7_1" placeholder="Eerste belangrijkste reden..." class="track-input w-full rounded-xl border-2 border-slate-200 focus:border-rkc-blue focus:ring-4 focus:ring-rkc-blue/10 px-4 py-3 text-base outline-none transition">
+                                </div>
+                                <div>
+                                    <label for="q7_2" class="block text-xs font-bold uppercase text-slate-500 mb-1">Reden 2</label>
+                                    <input type="text" id="q7_2" name="q7_2" placeholder="Tweede belangrijkste reden..." class="track-input w-full rounded-xl border-2 border-slate-200 focus:border-rkc-blue focus:ring-4 focus:ring-rkc-blue/10 px-4 py-3 text-base outline-none transition">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vraag 8 -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="8">
+                            <p class="text-base sm:text-lg font-bold text-rkc-navy mb-3">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">8</span>
+                                Hebben de mensen met wie je hier bent ook een seizoenkaart?
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q8" value="Ja, allemaal" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Ja, allemaal</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q8" value="Een deel wel, een deel niet" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Een deel wel, een deel niet</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q8" value="Nee, niemand" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Nee, niemand</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q8" value="Ik ben alleen" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Ik ben alleen</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Vraag 9 -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="9">
+                            <label for="q9" class="block text-base sm:text-lg font-bold text-rkc-navy mb-2">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">9</span>
+                                Je had dus nog nooit een wedstrijd gezien en kocht meteen een seizoenkaart. Waarom eigenlijk, en niet eerst een los kaartje? <span class="text-rkc-blue font-semibold text-sm">(alleen koude kopers)</span>
+                            </label>
+                            <textarea id="q9" name="q9" rows="3" placeholder="Alleen invullen als je direct een seizoenkaart kocht zonder eerder een wedstrijd te zien..." class="track-input w-full rounded-xl border-2 border-slate-200 focus:border-rkc-blue focus:ring-4 focus:ring-rkc-blue/10 px-4 py-3 text-base outline-none transition"></textarea>
+                        </div>
+
+                        <!-- Vraag 10 -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="10">
+                            <label for="q10" class="block text-base sm:text-lg font-bold text-rkc-navy mb-2">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">10</span>
+                                Was er iets waardoor je eerder een keer was komen kijken? Bijvoorbeeld een gratis eerste wedstrijd, een actie met vrienden of een studentenprijs? <span class="text-rkc-blue font-semibold text-sm">(alleen koude kopers)</span>
+                            </label>
+                            <textarea id="q10" name="q10" rows="3" placeholder="Typ hier je antwoord (alleen koude kopers)..." class="track-input w-full rounded-xl border-2 border-slate-200 focus:border-rkc-blue focus:ring-4 focus:ring-rkc-blue/10 px-4 py-3 text-base outline-none transition"></textarea>
+                        </div>
+
+                        <!-- Vraag 11 -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="11">
+                            <p class="text-base sm:text-lg font-bold text-rkc-navy mb-3">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">11</span>
+                                Denk je dat je volgend seizoen weer een seizoenkaart neemt?
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q11" value="Ja, zeker" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Ja, zeker</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q11" value="Waarschijnlijk wel" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Waarschijnlijk wel</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q11" value="Twijfel nog" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Twijfel nog</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q11" value="Waarschijnlijk niet" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Waarschijnlijk niet</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q11" value="Nee" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Nee</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================== -->
+                <!-- SECTIE 3: LOS KAARTJE (Vraag 12 t/m 14)    -->
+                <!-- ========================================== -->
+                <section id="section-los" class="bg-white rounded-2xl shadow-md border border-slate-200/80 overflow-hidden transition-all">
+                    <div class="bg-rkc-blue px-6 py-4 flex items-center justify-between border-b-4 border-rkc-yellow">
+                        <h3 class="font-display text-xl font-bold uppercase tracking-wide text-white">
+                            Los kaartje
+                        </h3>
+                        <span class="text-xs font-bold bg-rkc-yellow text-rkc-navy px-2.5 py-1 rounded-full">Vraag 12 – 14</span>
+                    </div>
+
+                    <div class="p-5 sm:p-6 space-y-6">
+                        <!-- Vraag 12 -->
+                        <div class="question-block" data-q="12">
+                            <p class="text-base sm:text-lg font-bold text-rkc-navy mb-3">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">12</span>
+                                Hoe vaak ben je dit seizoen al bij RKC geweest, vandaag meegerekend?
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q12" value="1 keer (vandaag is de eerste keer)" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>1 keer (vandaag is de eerste keer)</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q12" value="2 tot 3 keer" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>2 tot 3 keer</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q12" value="4 tot 6 keer" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>4 tot 6 keer</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q12" value="Meer dan 6 keer" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Meer dan 6 keer</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Vraag 13 -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="13">
+                            <label for="q13" class="block text-base sm:text-lg font-bold text-rkc-navy mb-2">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">13</span>
+                                Waarom heb je (nog) geen seizoenkaart?
+                            </label>
+                            <textarea id="q13" name="q13" rows="3" placeholder="Typ hier je antwoord..." class="track-input w-full rounded-xl border-2 border-slate-200 focus:border-rkc-blue focus:ring-4 focus:ring-rkc-blue/10 px-4 py-3 text-base outline-none transition"></textarea>
+                        </div>
+
+                        <!-- Vraag 14 -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="14">
+                            <label for="q14" class="block text-base sm:text-lg font-bold text-rkc-navy mb-2">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">14</span>
+                                Wat zou je overhalen om wel een seizoenkaart te nemen?
+                            </label>
+                            <textarea id="q14" name="q14" rows="3" placeholder="Typ hier je antwoord..." class="track-input w-full rounded-xl border-2 border-slate-200 focus:border-rkc-blue focus:ring-4 focus:ring-rkc-blue/10 px-4 py-3 text-base outline-none transition"></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================== -->
+                <!-- SECTIE 4: IEDEREEN (Vraag 15 t/m 21)       -->
+                <!-- ========================================== -->
+                <section class="bg-white rounded-2xl shadow-md border border-slate-200/80 overflow-hidden">
+                    <div class="bg-rkc-navy px-6 py-4 flex items-center justify-between border-b-4 border-rkc-yellow">
+                        <h3 class="font-display text-xl font-bold uppercase tracking-wide text-white">
+                            Iedereen
+                        </h3>
+                        <span class="text-xs font-bold bg-rkc-yellow text-rkc-navy px-2.5 py-1 rounded-full">Vraag 15 – 21</span>
+                    </div>
+
+                    <div class="p-5 sm:p-6 space-y-6">
+                        <!-- Vraag 15 (Max 2 checkboxes) -->
+                        <div class="question-block" data-q="15">
+                            <p class="text-base sm:text-lg font-bold text-rkc-navy mb-1">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">15</span>
+                                RKC denkt na over nieuwe kaarten voor jongeren: een seizoenkaart met korting tot 25 jaar, een flexkaart voor een paar wedstrijden, een goedkoop lidmaatschap met voorrang op kaarten, korting als je een vriend meeneemt, of betalen in termijnen. Welke twee vind jij het leukst?
+                            </p>
+                            <p class="text-xs font-bold text-rkc-blue mb-3 ml-9">Kies maximaal 2 opties (<span id="q15Counter">0</span>/2 geselecteerd)</p>
+                            <div class="grid grid-cols-1 gap-2.5">
+                                <label class="option-card cursor-pointer">
+                                    <input type="checkbox" name="q15" value="Seizoenkaart met korting tot 25 jaar" class="sr-only q15-checkbox track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-md border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Seizoenkaart met korting tot 25 jaar</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="checkbox" name="q15" value="Flexkaart voor een paar wedstrijden" class="sr-only q15-checkbox track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-md border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Flexkaart voor een paar wedstrijden</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="checkbox" name="q15" value="Goedkoop lidmaatschap met voorrang op kaarten" class="sr-only q15-checkbox track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-md border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Goedkoop lidmaatschap met voorrang op kaarten</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="checkbox" name="q15" value="Korting als je een vriend meeneemt" class="sr-only q15-checkbox track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-md border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Korting als je een vriend meeneemt</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="checkbox" name="q15" value="Betalen in termijnen" class="sr-only q15-checkbox track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-md border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Betalen in termijnen</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Vraag 16 -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="16">
+                            <p class="text-base sm:text-lg font-bold text-rkc-navy mb-3">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">16</span>
+                                Op welke app zit je het meest?
+                            </p>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q16" value="TikTok" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3 font-semibold text-slate-800 flex items-center gap-2.5 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>TikTok</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q16" value="Instagram" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3 font-semibold text-slate-800 flex items-center gap-2.5 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Instagram</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q16" value="Snapchat" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3 font-semibold text-slate-800 flex items-center gap-2.5 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Snapchat</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q16" value="YouTube" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3 font-semibold text-slate-800 flex items-center gap-2.5 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>YouTube</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q16" value="WhatsApp" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3 font-semibold text-slate-800 flex items-center gap-2.5 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>WhatsApp</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q16" value="X (Twitter)" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3 font-semibold text-slate-800 flex items-center gap-2.5 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>X (Twitter)</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer col-span-2 sm:col-span-3">
+                                    <input type="radio" name="q16" value="Anders" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3 font-semibold text-slate-800 flex items-center gap-2.5 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Anders</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Vraag 17 -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="17">
+                            <label for="q17" class="block text-base sm:text-lg font-bold text-rkc-navy mb-2">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">17</span>
+                                Wat zou je van RKC het liefst online zien?
+                            </label>
+                            <textarea id="q17" name="q17" rows="3" placeholder="Bijv. beelden achter de schermen, spelerschallenges, samenvattingen..." class="track-input w-full rounded-xl border-2 border-slate-200 focus:border-rkc-blue focus:ring-4 focus:ring-rkc-blue/10 px-4 py-3 text-base outline-none transition"></textarea>
+                        </div>
+
+                        <!-- Vraag 18 -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="18">
+                            <label for="q18" class="block text-base sm:text-lg font-bold text-rkc-navy mb-2">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">18</span>
+                                Wat maakt een dag als vandaag voor jou extra leuk?
+                            </label>
+                            <textarea id="q18" name="q18" rows="3" placeholder="Typ hier je antwoord..." class="track-input w-full rounded-xl border-2 border-slate-200 focus:border-rkc-blue focus:ring-4 focus:ring-rkc-blue/10 px-4 py-3 text-base outline-none transition"></textarea>
+                        </div>
+
+                        <!-- Vraag 19 (1 tot 5 schaal in RKC geel/blauw) -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="19">
+                            <p class="text-base sm:text-lg font-bold text-rkc-navy mb-3">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">19</span>
+                                Als je een cijfer van 1 tot 5 geeft: hoe verbonden voel je je met RKC?
+                            </p>
+                            <div class="grid grid-cols-5 gap-2 sm:gap-3">
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q19" value="1" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-2xl py-4 px-2 text-center transition hover:border-rkc-blue">
+                                        <span class="block font-display text-2xl sm:text-3xl font-bold">1</span>
+                                        <span class="block text-[10px] sm:text-xs opacity-80 mt-0.5">Heel weinig</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q19" value="2" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-2xl py-4 px-2 text-center transition hover:border-rkc-blue">
+                                        <span class="block font-display text-2xl sm:text-3xl font-bold">2</span>
+                                        <span class="block text-[10px] sm:text-xs opacity-80 mt-0.5">Weinig</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q19" value="3" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-2xl py-4 px-2 text-center transition hover:border-rkc-blue">
+                                        <span class="block font-display text-2xl sm:text-3xl font-bold">3</span>
+                                        <span class="block text-[10px] sm:text-xs opacity-80 mt-0.5">Neutraal</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q19" value="4" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-2xl py-4 px-2 text-center transition hover:border-rkc-blue">
+                                        <span class="block font-display text-2xl sm:text-3xl font-bold">4</span>
+                                        <span class="block text-[10px] sm:text-xs opacity-80 mt-0.5">Veel</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q19" value="5" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-2xl py-4 px-2 text-center transition hover:border-rkc-blue">
+                                        <span class="block font-display text-2xl sm:text-3xl font-bold">5</span>
+                                        <span class="block text-[10px] sm:text-xs opacity-80 mt-0.5">Heel erg</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Vraag 20 -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="20">
+                            <p class="text-base sm:text-lg font-bold text-rkc-navy mb-3">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">20</span>
+                                Zou je het goed vinden als we je later nog even bellen of mailen voor een kort interview van een kwartiertje?
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q20" value="Ja, dat is goed" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Ja, dat is goed</span>
+                                    </div>
+                                </label>
+                                <label class="option-card cursor-pointer">
+                                    <input type="radio" name="q20" value="Nee, liever niet" class="sr-only track-input">
+                                    <div class="option-box border-2 border-slate-200 rounded-xl p-3.5 font-semibold text-slate-800 flex items-center gap-3 transition hover:border-rkc-blue/50">
+                                        <span class="option-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+                                        <span>Nee, liever niet</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Vraag 21 -->
+                        <div class="question-block pt-4 border-t border-slate-100" data-q="21">
+                            <label for="q21" class="block text-base sm:text-lg font-bold text-rkc-navy mb-2">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-rkc-yellow text-rkc-navy font-extrabold text-sm mr-2">21</span>
+                                Op welk nummer of mailadres mogen we je bereiken?
+                            </label>
+                            <input type="text" id="q21" name="q21" placeholder="06-12345678 of naam@voorbeeld.nl" class="track-input w-full rounded-xl border-2 border-slate-200 focus:border-rkc-blue focus:ring-4 focus:ring-rkc-blue/10 px-4 py-3 text-base outline-none transition">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Verzendknop -->
+                <div class="pt-2 pb-6">
+                    <button type="submit" class="w-full bg-rkc-yellow hover:bg-rkc-yellowHover text-rkc-navy font-display text-xl sm:text-2xl font-bold uppercase tracking-wider py-4 px-6 rounded-2xl shadow-xl border-2 border-rkc-navy/10 flex items-center justify-center gap-3 transition transform active:scale-[0.99]">
+                        <span>Enquête versturen</span>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- VIEW 2: BEVESTIGINGSSCHERM NA INZENDING -->
+        <div id="thankYouView" class="hidden bg-white rounded-2xl shadow-xl border-2 border-rkc-yellow overflow-hidden text-center">
+            <div class="rkc-stripes py-10 px-6 text-white">
+                <div class="w-20 h-20 rounded-full bg-rkc-yellow text-rkc-navy mx-auto flex items-center justify-center shadow-lg mb-4">
+                    <svg class="w-11 h-11" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <h2 class="font-display text-3xl sm:text-4xl font-bold uppercase tracking-wide text-rkc-yellow">
+                    Bedankt voor je deelname!
+                </h2>
+                <p class="text-white text-base sm:text-lg max-w-md mx-auto mt-2">
+                    Jouw antwoorden zijn opgeslagen. Veel plezier bij de wedstrijd van RKC Waalwijk!
+                </p>
+            </div>
+            <div class="p-6 sm:p-8 space-y-4">
+                <p class="text-slate-600 text-sm">
+                    Samen met vrienden of familie in het stadion? Laat hen de enquête ook direct invullen op dit toestel of via de QR-code.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                    <button type="button" onclick="resetSurvey()" class="bg-rkc-blue hover:bg-rkc-blueDark text-white font-bold py-3.5 px-6 rounded-xl shadow transition">
+                        + Volgende supporter invullen
+                    </button>
+                    <button type="button" onclick="openQrModal()" class="bg-rkc-yellow hover:bg-rkc-yellowHover text-rkc-navy font-bold py-3.5 px-6 rounded-xl shadow transition">
+                        Toon QR-code om te delen
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: ONDERZOEKERS DASHBOARD & CSV EXPORT -->
+        <div id="adminView" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+                <div class="bg-rkc-navy px-6 py-5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-4 border-rkc-yellow">
+                    <div>
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-rkc-yellow">Onderzoekersomgeving</span>
+                        <h2 class="font-display text-2xl font-bold uppercase">Resultaten &amp; CSV-Export</h2>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="exportToCSV()" class="bg-rkc-yellow hover:bg-rkc-yellowHover text-rkc-navy font-bold text-sm px-4 py-2.5 rounded-xl shadow flex items-center gap-2 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            <span>Download CSV (Excel)</span>
+                        </button>
+                        <button type="button" onclick="toggleAdminView()" class="bg-white/15 hover:bg-white/25 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition">
+                            Terug naar enquête
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Statistieken samenvatting -->
+                <div class="p-6 grid grid-cols-2 sm:grid-cols-4 gap-4 bg-slate-50 border-b border-slate-200">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Totaal inzendingen</span>
+                        <p id="statTotal" class="font-display text-3xl font-bold text-rkc-blue mt-1">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Gem. Verbondenheid</span>
+                        <p id="statAvgScore" class="font-display text-3xl font-bold text-rkc-navy mt-1">-</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Interview bereid</span>
+                        <p id="statInterview" class="font-display text-3xl font-bold text-emerald-600 mt-1">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Top App</span>
+                        <p id="statTopApp" class="font-display text-2xl font-bold text-rkc-blue mt-1 truncate">-</p>
+                    </div>
+                </div>
+
+                <!-- Tabel met recente inzendingen -->
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-rkc-navy text-lg">Ingezonden enquêtes (lokaal opgeslagen)</h3>
+                        <button type="button" onclick="confirmClearData()" id="clearDataBtn" class="text-xs font-bold text-red-600 hover:text-red-800 underline">
+                            Wis alle lokale testdata
+                        </button>
+                    </div>
+                    <div id="responsesTableContainer" class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-rkc-blue text-white text-xs uppercase">
+                                <tr>
+                                    <th class="px-4 py-3">#</th>
+                                    <th class="px-4 py-3">Tijdstip</th>
+                                    <th class="px-4 py-3">Woonplaats (V1)</th>
+                                    <th class="px-4 py-3">Status (V3)</th>
+                                    <th class="px-4 py-3">Cijfer RKC (V19)</th>
+                                    <th class="px-4 py-3">Interview (V20/21)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="responsesTableBody" class="divide-y divide-slate-200 bg-white">
+                                <tr>
+                                    <td colspan="6" class="px-4 py-8 text-center text-slate-500">Nog geen inzendingen ontvangen op dit apparaat.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-rkc-navy text-white/80 py-6 px-4 border-t-4 border-rkc-yellow mt-auto">
+        <div class="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm">
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-rkc-yellow inline-block"></span>
+                <span class="font-semibold text-white">RKC Waalwijk • Mandemakers Stadion</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <button type="button" onclick="openQrModal()" class="text-rkc-yellow hover:underline font-bold">
+                    QR-code &amp; Stadionposter
+                </button>
+                <button type="button" onclick="toggleAdminView()" class="hover:text-white underline">
+                    Onderzoekers &amp; CSV
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- MODAL: QR-CODE GENERATOR & STADIONPOSTER   -->
+    <!-- ========================================== -->
+    <div id="qrModal" class="hidden fixed inset-0 z-50 bg-rkc-navy/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border-2 border-rkc-yellow overflow-hidden my-auto">
+            <!-- Modal Header -->
+            <div class="bg-rkc-blue px-6 py-4 text-white flex items-center justify-between border-b-4 border-rkc-yellow no-print">
+                <h3 class="font-display text-xl font-bold uppercase tracking-wide">
+                    QR-code &amp; Delen in het Stadion
+                </h3>
+                <button type="button" onclick="closeQrModal()" class="w-8 h-8 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center text-white font-bold">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Printbare Stadionposter Sectie -->
+            <div id="printable-poster" class="p-6 text-center bg-gradient-to-b from-rkc-blue to-rkc-navy text-white">
+                <span class="inline-block bg-rkc-yellow text-rkc-navy text-xs font-extrabold uppercase tracking-widest px-3 py-1 rounded-full mb-2">
+                    RKC Waalwijk • Jouw Mening Telt
+                </span>
+                <h4 class="font-display text-2xl sm:text-3xl font-bold uppercase tracking-wide text-white">
+                    Scan &amp; Win / Denk Mee!
+                </h4>
+                <p class="text-blue-100 text-sm mt-1 mb-5 max-w-xs mx-auto">
+                    Scan de QR-code met je camera en vul in 3 minuten de wedstrijdenquête in.
+                </p>
+
+                <!-- Witte QR-code kaart -->
+                <div class="bg-white p-4 rounded-2xl inline-block shadow-xl border-4 border-rkc-yellow mx-auto">
+                    <div id="qrcodeContainer" class="flex items-center justify-center"></div>
+                </div>
+
+                <p class="text-rkc-yellow font-display font-bold uppercase tracking-wider text-sm mt-4">
+                    Samen RKC • Geel &amp; Blauw
+                </p>
+            </div>
+
+            <!-- Instellingen voor URL & Printen -->
+            <div class="p-5 bg-slate-50 border-t border-slate-200 space-y-3 no-print">
+                <div>
+                    <label for="qrUrlInput" class="block text-xs font-bold uppercase text-slate-600 mb-1">
+                        Link achter de QR-code (pas aan indien je hem online host):
+                    </label>
+                    <div class="flex gap-2">
+                        <input type="text" id="qrUrlInput" class="flex-1 rounded-xl border border-slate-300 px-3 py-2 text-xs sm:text-sm text-slate-800 focus:border-rkc-blue outline-none">
+                        <button type="button" onclick="regenerateQR()" class="bg-rkc-blue hover:bg-rkc-blueDark text-white font-bold text-xs px-3 py-2 rounded-xl transition">
+                            Update QR
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5 pt-1">
+                    <button type="button" onclick="copySurveyLink()" class="bg-white hover:bg-slate-100 text-rkc-navy border border-slate-300 font-bold py-2.5 px-4 rounded-xl text-sm flex items-center justify-center gap-2 transition">
+                        <span>📋 Kopieer link</span>
+                    </button>
+                    <button type="button" onclick="window.print()" class="bg-rkc-yellow hover:bg-rkc-yellowHover text-rkc-navy font-bold py-2.5 px-4 rounded-xl text-sm flex items-center justify-center gap-2 shadow transition">
+                        <span>🖨️ Print Stadionposter</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logica -->
+    <script>
+        // Storage sleutel voor lokaal opslaan van ingezonden enquêtes
+        const STORAGE_KEY = 'rkc_waalwijk_fan_survey_v1';
+        let clearConfirmState = false;
+
+        // Initialiseer bij laden
+        document.addEventListener('DOMContentLoaded', () => {
+            updateResponseCount();
+            setupProgressTracking();
+            setupQ15Limiter();
+            setupFormSubmit();
+
+            // Zet standaard URL in QR-veld
+            const currentUrl = window.location.href;
+            document.getElementById('qrUrlInput').value = currentUrl;
+        });
+
+        // Toast melding tonen (geen alert())
+        function showToast(message) {
+            const banner = document.getElementById('toastBanner');
+            const msgEl = document.getElementById('toastMessage');
+            msgEl.textContent = message;
+            banner.classList.remove('hidden');
+            clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => {
+                banner.classList.add('hidden');
+            }, 3500);
+        }
+
+        // Route wisselen tussen Seizoenkaarthouders / Los kaartje / Beide
+        function setTicketRoute(route) {
+            const secSeizoen = document.getElementById('section-seizoenkaart');
+            const secLos = document.getElementById('section-los');
+            const btns = document.querySelectorAll('.route-btn');
+
+            // Reset knopstijlen
+            btns.forEach(btn => {
+                btn.classList.remove('bg-rkc-yellow', 'border-rkc-yellow', 'font-extrabold');
+                btn.classList.add('bg-white', 'border-white', 'font-bold');
+            });
+
+            const activeBtn = document.getElementById(`btn-route-${route}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-white', 'border-white', 'font-bold');
+                activeBtn.classList.add('bg-rkc-yellow', 'border-rkc-yellow', 'font-extrabold');
+            }
+
+            if (route === 'seizoenkaart') {
+                secSeizoen.classList.remove('hidden');
+                secLos.classList.add('hidden');
+                secSeizoen.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else if (route === 'los') {
+                secSeizoen.classList.add('hidden');
+                secLos.classList.remove('hidden');
+                secLos.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                secSeizoen.classList.remove('hidden');
+                secLos.classList.remove('hidden');
+            }
+        }
+
+        // Maximaal 2 opties bij Vraag 15 afdwingen
+        function setupQ15Limiter() {
+            const checkboxes = document.querySelectorAll('.q15-checkbox');
+            const counterEl = document.getElementById('q15Counter');
+
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    const checked = document.querySelectorAll('.q15-checkbox:checked');
+                    if (checked.length > 2) {
+                        cb.checked = false;
+                        showToast('Je mag bij vraag 15 maximaal 2 opties kiezen.');
+                    }
+                    const finalChecked = document.querySelectorAll('.q15-checkbox:checked');
+                    counterEl.textContent = finalChecked.length;
+                    updateProgress();
+                });
+            });
+        }
+
+        // Voortgangsbalk bijhouden over de 21 vragen
+        function setupProgressTracking() {
+            const inputs = document.querySelectorAll('.track-input');
+            inputs.forEach(input => {
+                input.addEventListener('input', updateProgress);
+                input.addEventListener('change', updateProgress);
+            });
+        }
+
+        function updateProgress() {
+            let answeredCount = 0;
+            for (let i = 1; i <= 21; i++) {
+                if (i === 7) {
+                    const v1 = document.getElementById('q7_1').value.trim();
+                    const v2 = document.getElementById('q7_2').value.trim();
+                    if (v1 !== '' || v2 !== '') answeredCount++;
+                } else if (i === 15) {
+                    const checked = document.querySelectorAll('input[name="q15"]:checked');
+                    if (checked.length > 0) answeredCount++;
+                } else {
+                    const el = document.querySelector(`[name="q${i}"]`);
+                    if (!el) continue;
+                    if (el.type === 'radio') {
+                        const checked = document.querySelector(`input[name="q${i}"]:checked`);
+                        if (checked) answeredCount++;
+                    } else {
+                        if (el.value.trim() !== '') answeredCount++;
+                    }
+                }
+            }
+
+            const pct = Math.max(5, Math.round((answeredCount / 21) * 100));
+            document.getElementById('progressBar').style.width = `${pct}%`;
+            document.getElementById('progressText').textContent = `${answeredCount} van 21 vragen beantwoord`;
+        }
+
+        // Formulier verzenden & lokaal opslaan
+        function setupFormSubmit() {
+            const form = document.getElementById('rkcSurveyForm');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const getRadio = (name) => {
+                    const el = document.querySelector(`input[name="${name}"]:checked`);
+                    return el ? el.value : '';
+                };
+
+                const q15Values = Array.from(document.querySelectorAll('input[name="q15"]:checked')).map(cb => cb.value);
+
+                const entry = {
+                    timestamp: new Date().toLocaleString('nl-NL'),
+                    q1: document.getElementById('q1').value.trim(),
+                    q2: document.getElementById('q2').value.trim(),
+                    q3: getRadio('q3'),
+                    q4: getRadio('q4'),
+                    q5: getRadio('q5'),
+                    q6: document.getElementById('q6').value.trim(),
+                    q7_reden1: document.getElementById('q7_1').value.trim(),
+                    q7_reden2: document.getElementById('q7_2').value.trim(),
+                    q8: getRadio('q8'),
+                    q9: document.getElementById('q9').value.trim(),
+                    q10: document.getElementById('q10').value.trim(),
+                    q11: getRadio('q11'),
+                    q12: getRadio('q12'),
+                    q13: document.getElementById('q13').value.trim(),
+                    q14: document.getElementById('q14').value.trim(),
+                    q15: q15Values.join(' | '),
+                    q16: getRadio('q16'),
+                    q17: document.getElementById('q17').value.trim(),
+                    q18: document.getElementById('q18').value.trim(),
+                    q19: getRadio('q19'),
+                    q20: getRadio('q20'),
+                    q21: document.getElementById('q21').value.trim()
+                };
+
+                // Controleer of er überhaupt iets is ingevuld
+                const hasAnyData = Object.entries(entry).some(([k, v]) => k !== 'timestamp' && v !== '');
+                if (!hasAnyData) {
+                    showToast('Vul eerst een aantal vragen in voordat je de enquête verstuurt.');
+                    return;
+                }
+
+                const existing = getSavedResponses();
+                existing.push(entry);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+
+                updateResponseCount();
+                document.getElementById('surveyView').classList.add('hidden');
+                document.getElementById('thankYouView').classList.remove('hidden');
+                document.getElementById('progressBar').style.width = '100%';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+
+        // Volgende supporter invullen
+        function resetSurvey() {
+            document.getElementById('rkcSurveyForm').reset();
+            document.getElementById('q15Counter').textContent = '0';
+            setTicketRoute('beide');
+            updateProgress();
+            document.getElementById('thankYouView').classList.add('hidden');
+            document.getElementById('surveyView').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Data ophalen uit localStorage
+        function getSavedResponses() {
+            try {
+                return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            } catch (err) {
+                return [];
+            }
+        }
+
+        function updateResponseCount() {
+            const list = getSavedResponses();
+            document.getElementById('responseBadge').textContent = list.length;
+        }
+
+        // Wisselen tussen Enquête en Onderzoekers-weergave
+        function toggleAdminView() {
+            const adminView = document.getElementById('adminView');
+            const surveyView = document.getElementById('surveyView');
+            const thankYouView = document.getElementById('thankYouView');
+
+            if (adminView.classList.contains('hidden')) {
+                renderAdminDashboard();
+                surveyView.classList.add('hidden');
+                thankYouView.classList.add('hidden');
+                adminView.classList.remove('hidden');
+            } else {
+                adminView.classList.add('hidden');
+                surveyView.classList.remove('hidden');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Dashboard met statistieken en tabel vullen
+        function renderAdminDashboard() {
+            const list = getSavedResponses();
+            document.getElementById('statTotal').textContent = list.length;
+
+            // Gemiddeld cijfer V19
+            const scores = list.map(r => Number(r.q19)).filter(n => !isNaN(n) && n > 0);
+            if (scores.length > 0) {
+                const avg = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
+                document.getElementById('statAvgScore').textContent = `${avg} / 5`;
+            } else {
+                document.getElementById('statAvgScore').textContent = '-';
+            }
+
+            // Interview bereid V20
+            const interviews = list.filter(r => r.q20 === 'Ja, dat is goed').length;
+            document.getElementById('statInterview').textContent = interviews;
+
+            // Populairste app V16
+            const appCounts = {};
+            list.forEach(r => {
+                if (r.q16) appCounts[r.q16] = (appCounts[r.q16] || 0) + 1;
+            });
+            const topApp = Object.entries(appCounts).sort((a, b) => b[1] - a[1])[0];
+            document.getElementById('statTopApp').textContent = topApp ? topApp[0] : '-';
+
+            // Tabel vullen
+            const tbody = document.getElementById('responsesTableBody');
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">Nog geen inzendingen ontvangen op dit apparaat.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = list.slice().reverse().map((item, idx) => {
+                const nr = list.length - idx;
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-4 py-3 font-bold text-rkc-navy">${nr}</td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${escapeHtml(item.timestamp)}</td>
+                        <td class="px-4 py-3 font-medium">${escapeHtml(item.q1 || '-')}</td>
+                        <td class="px-4 py-3">${escapeHtml(item.q3 || '-')}</td>
+                        <td class="px-4 py-3">
+                            ${item.q19 ? `<span class="inline-block bg-rkc-yellow text-rkc-navy font-extrabold px-2.5 py-0.5 rounded-lg">${escapeHtml(item.q19)}</span>` : '-'}
+                        </td>
+                        <td class="px-4 py-3 text-xs">
+                            <span class="font-semibold">${escapeHtml(item.q20 || '-')}</span>
+                            ${item.q21 ? `<br><span class="text-rkc-blue font-medium">${escapeHtml(item.q21)}</span>` : ''}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        // Exporteren naar Excel-vriendelijk CSV bestand (puntkomma gescheiden + UTF-8 BOM)
+        function exportToCSV() {
+            const list = getSavedResponses();
+            if (list.length === 0) {
+                showToast('Er zijn nog geen ingezonden resultaten om te exporteren.');
+                return;
+            }
+
+            const headers = [
+                'Tijdstip',
+                '1. Waar woon je?',
+                '2. Woon je daar al lang?',
+                '3. Studeer je, werk je, of zit je nog op school?',
+                '4. Met wie ben je hier vandaag?',
+                '5. Voetbal je zelf, of heb je vroeger gevoetbald?',
+                '6. Hoe ben je eigenlijk bij RKC terechtgekomen? Hoe heb je de club leren kennen?',
+                '7a. Twee belangrijkste redenen seizoenkaart (Reden 1)',
+                '7b. Twee belangrijkste redenen seizoenkaart (Reden 2)',
+                '8. Hebben de mensen met wie je hier bent ook een seizoenkaart?',
+                '9. Waarom meteen seizoenkaart en niet eerst los kaartje? (alleen koude kopers)',
+                '10. Was er iets waardoor je eerder een keer was komen kijken? (alleen koude kopers)',
+                '11. Denk je dat je volgend seizoen weer een seizoenkaart neemt?',
+                '12. Hoe vaak ben je dit seizoen al bij RKC geweest, vandaag meegerekend?',
+                '13. Waarom heb je (nog) geen seizoenkaart?',
+                '14. Wat zou je overhalen om wel een seizoenkaart te nemen?',
+                '15. Nieuwe kaarten voor jongeren (max 2 gekozen)',
+                '16. Op welke app zit je het meest?',
+                '17. Wat zou je van RKC het liefst online zien?',
+                '18. Wat maakt een dag als vandaag voor jou extra leuk?',
+                '19. Cijfer verbondenheid met RKC (1-5)',
+                '20. Mogen we je bellen of mailen voor een kort interview?',
+                '21. Nummer of mailadres'
+            ];
+
+            const keys = [
+                'timestamp', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6',
+                'q7_reden1', 'q7_reden2', 'q8', 'q9', 'q10', 'q11',
+                'q12', 'q13', 'q14', 'q15', 'q16', 'q17', 'q18', 'q19', 'q20', 'q21'
+            ];
+
+            const escapeCsv = (val) => {
+                const str = String(val ?? '').replace(/\r?\n|\r/g, ' ');
+                return `"${str.replace(/"/g, '""')}"`;
+            };
+
+            const csvRows = [
+                headers.map(escapeCsv).join(';'),
+                ...list.map(row => keys.map(k => escapeCsv(row[k])).join(';'))
+            ];
+
+            const csvContent = '\uFEFF' + csvRows.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `RKC_Waalwijk_Enquete_Resultaten_${new Date().toISOString().slice(0,10)}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showToast('CSV-bestand gedownload! Je kunt dit direct in Excel openen.');
+        }
+
+        // Tweestaps bevestiging om testdata te wissen zonder confirm()
+        function confirmClearData() {
+            const btn = document.getElementById('clearDataBtn');
+            if (!clearConfirmState) {
+                clearConfirmState = true;
+                btn.textContent = 'Klik nogmaals om definitief te wissen';
+                setTimeout(() => {
+                    clearConfirmState = false;
+                    btn.textContent = 'Wis alle lokale testdata';
+                }, 4000);
+                return;
+            }
+            localStorage.removeItem(STORAGE_KEY);
+            clearConfirmState = false;
+            btn.textContent = 'Wis alle lokale testdata';
+            updateResponseCount();
+            renderAdminDashboard();
+            showToast('Alle lokale inzendingen zijn gewist.');
+        }
+
+        // QR-code Modal functies
+        function openQrModal() {
+            document.getElementById('qrModal').classList.remove('hidden');
+            regenerateQR();
+        }
+
+        function closeQrModal() {
+            document.getElementById('qrModal').classList.add('hidden');
+        }
+
+        function regenerateQR() {
+            const container = document.getElementById('qrcodeContainer');
+            const urlInput = document.getElementById('qrUrlInput').value.trim() || window.location.href;
+            container.innerHTML = '';
+
+            try {
+                new QRCode(container, {
+                    text: urlInput,
+                    width: 210,
+                    height: 210,
+                    colorDark: '#001A4D',
+                    colorLight: '#FFFFFF',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } catch (e) {
+                container.innerHTML = '<p class="text-xs text-red-600 p-4">Kon QR-code niet genereren voor deze tekstlengte.</p>';
+            }
+        }
+
+        function copySurveyLink() {
+            const input = document.getElementById('qrUrlInput');
+            input.select();
+            input.setSelectionRange(0, 99999);
+            try {
+                document.execCommand('copy');
+                showToast('Link gekopieerd naar het klembord!');
+            } catch (err) {
+                showToast('Kopiëren mislukt, selecteer de link handmatig.');
+            }
+        }
+    </script>
+</body>
+</html>
