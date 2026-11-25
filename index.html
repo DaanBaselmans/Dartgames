@@ -101,7 +101,7 @@
           🏋️ Training
         </button>
         <button id="nav-career" onclick="app.showScreen('career')" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-dart-card text-slate-300 hover:text-white border border-dart-border whitespace-nowrap transition">
-          📊 Carrière
+          📊 Statistieken
         </button>
         <button id="btn-caller-toggle" onclick="app.toggleCallerVoice()" title="TV Referee Caller aan/uit" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-dart-card text-emerald-300 border border-dart-border hover:border-emerald-500 whitespace-nowrap transition">
           🗣️ Caller: AAN
@@ -226,9 +226,7 @@
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">DartBot AI Niveau (1 t/m 10)</label>
             <span id="selected-ai-desc" class="text-xs font-bold text-emerald-400">Niveau 4 • Clubspeler (~48 gem.)</span>
           </div>
-          <div id="ai-levels-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-2">
-            <!-- Populated by JS -->
-          </div>
+          <div id="ai-levels-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-2"></div>
         </div>
 
         <!-- Start Button -->
@@ -350,7 +348,7 @@
                 🔢 Snel-Invoer
               </button>
               <button id="tab-input-board" onclick="app.setInputMode('board')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">
-                🎯 Per Pijl (Bord)
+                🎯 Per Pijl (Single/Double/Triple)
               </button>
             </div>
 
@@ -425,13 +423,11 @@
               <!-- Quick Multiplier + Number Pad -->
               <div class="space-y-1.5">
                 <div class="grid grid-cols-3 gap-1" id="board-mult-selector">
-                  <button onclick="app.setBoardMultiplier(1)" data-mult="1" class="mult-btn py-1.5 rounded-lg font-extrabold text-xs bg-emerald-500 text-slate-950">Single</button>
-                  <button onclick="app.setBoardMultiplier(2)" data-mult="2" class="mult-btn py-1.5 rounded-lg font-extrabold text-xs bg-dart-card text-slate-300 border border-dart-border">Double</button>
-                  <button onclick="app.setBoardMultiplier(3)" data-mult="3" class="mult-btn py-1.5 rounded-lg font-extrabold text-xs bg-dart-card text-slate-300 border border-dart-border">Triple</button>
+                  <button onclick="app.setBoardMultiplier(1)" data-mult="1" class="mult-btn py-1.5 rounded-lg font-extrabold text-xs bg-emerald-500 text-slate-950">Single (1×)</button>
+                  <button onclick="app.setBoardMultiplier(2)" data-mult="2" class="mult-btn py-1.5 rounded-lg font-extrabold text-xs bg-dart-card text-slate-300 border border-dart-border">Double (2×)</button>
+                  <button onclick="app.setBoardMultiplier(3)" data-mult="3" class="mult-btn py-1.5 rounded-lg font-extrabold text-xs bg-dart-card text-slate-300 border border-dart-border">Triple (3×)</button>
                 </div>
-                <div class="grid grid-cols-5 gap-1" id="board-quick-numbers">
-                  <!-- Populated 1-20 by JS -->
-                </div>
+                <div class="grid grid-cols-5 gap-1" id="board-quick-numbers"></div>
                 <div class="grid grid-cols-3 gap-1">
                   <button onclick="app.registerDart(25, 1, '25')" class="py-1.5 rounded-lg bg-emerald-950/70 border border-emerald-700 text-emerald-300 font-mono font-bold text-xs">25</button>
                   <button onclick="app.registerDart(25, 2, 'Bull')" class="py-1.5 rounded-lg bg-rose-950/70 border border-rose-700 text-rose-300 font-mono font-bold text-xs">Bull (50)</button>
@@ -473,7 +469,7 @@
         <div class="bg-dart-panel border border-dart-border rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h1 class="text-xl sm:text-2xl font-black text-white">Darts Training Center</h1>
-            <p class="text-xs sm:text-sm text-slate-400">7 professionele oefenspellen met directe Score-Invoer, Per-Pijl, Spraak & AI Camera.</p>
+            <p class="text-xs sm:text-sm text-slate-400">Alle oefenspellen met Score-Invoer, Single/Double/Triple per pijl, Spraak & AI Camera.</p>
           </div>
         </div>
 
@@ -596,13 +592,13 @@
     </section>
 
     <!-- =================================================================== -->
-    <!-- SCREEN 4: CAREER STATISTICS, HEATMAP & DATABASE                     -->
+    <!-- SCREEN 4: CAREER STATISTICS, PER-GAME DATABASE & HEATMAP            -->
     <!-- =================================================================== -->
     <section id="screen-career" class="hidden space-y-4">
       <div class="bg-dart-panel border border-dart-border rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 class="text-xl sm:text-2xl font-black text-white">Carrière Statistieken & Analyse</h1>
-          <p class="text-xs sm:text-sm text-slate-400">Al je gespeelde wedstrijden, trainingsrecords en je persoonlijke treffer-heatmap.</p>
+          <h1 class="text-xl sm:text-2xl font-black text-white">Statistieken & Database per Spel</h1>
+          <p class="text-xs sm:text-sm text-slate-400">Al je gespeelde wedstrijden, trainingsrecords, database per spel en treffer-heatmap.</p>
         </div>
         <button onclick="app.exportAllDataCSV()" class="px-3.5 py-2 rounded-xl bg-dart-card hover:bg-slate-800 text-emerald-300 font-bold text-xs border border-dart-border self-start sm:self-auto">
           ⬇️ Exporteer CSV
@@ -627,6 +623,33 @@
           <span class="text-[11px] font-bold uppercase text-slate-400">100+ / 140+ / 180s</span>
           <div id="kpi-power-scores" class="font-mono text-xl font-black text-sky-400 mt-1">0 / 0 / 0</div>
         </div>
+      </div>
+
+      <!-- PER-GAME DATABASE SECTION -->
+      <div class="bg-dart-panel border border-dart-border rounded-2xl p-4 sm:p-5 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-dart-border pb-3">
+          <div>
+            <h2 class="font-extrabold text-base sm:text-lg text-white">🗄️ Database per Spel</h2>
+            <p class="text-xs text-slate-400">Bekijk per spelmodus je aantal sessies, beste score/gemiddelde en opgeslagen resultaten.</p>
+          </div>
+          <select id="db-game-filter" onchange="app.renderPerGameDatabase()" class="bg-dart-bg border border-dart-border rounded-xl px-3 py-2 text-xs font-bold text-white outline-none">
+            <option value="ALL">Alle spellen (Overzicht)</option>
+            <option value="501">501</option>
+            <option value="301">301</option>
+            <option value="170">170</option>
+            <option value="701">701</option>
+            <option value="cricket">Cricket</option>
+            <option value="121">121 Checkout Klimmen</option>
+            <option value="atc">Around the Clock</option>
+            <option value="bobs27">Bob's 27</option>
+            <option value="99darts">99 Darts op 20</option>
+            <option value="countup">Count-Up</option>
+            <option value="jdc">JDC Challenge</option>
+            <option value="halveit">Halve-It</option>
+            <option value="catch40">Catch 40</option>
+          </select>
+        </div>
+        <div id="per-game-database-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
       </div>
 
       <!-- Diagnostic Score Distribution & Heatmap -->
@@ -687,15 +710,15 @@
   </main>
 
   <!-- ===================================================================== -->
-  <!-- MODALS: CHECKOUT PROMPT, STATS, CAMERA SCANNER, MOBILE LOG, PWA       -->
+  <!-- MODALS: CHECKOUT/BUST PROMPT, STATS, CAMERA SCANNER, MOBILE LOG, PWA  -->
   <!-- ===================================================================== -->
 
-  <!-- Checkout Prompt Modal -->
+  <!-- Checkout / Bust Double Attempts Modal -->
   <div id="modal-checkout" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-dart-panel border border-dart-border rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
       <h3 id="checkout-modal-title" class="text-lg font-black text-white">Hoeveel pijlen gebruikt?</h3>
       <p id="checkout-modal-desc" class="text-xs text-slate-400">Selecteer het aantal gebruikte pijlen en pogingen op een dubbel.</p>
-      <div id="checkout-modal-options" class="grid grid-cols-3 gap-2"></div>
+      <div id="checkout-modal-options" class="grid grid-cols-2 gap-2"></div>
       <button onclick="app.closeCheckoutPrompt()" class="w-full py-2.5 rounded-xl bg-dart-card text-slate-300 font-bold text-xs border border-dart-border">Annuleren</button>
     </div>
   </div>
@@ -726,17 +749,14 @@
         <button onclick="app.closeCameraScanner()" class="px-2.5 py-1 rounded-lg bg-dart-card text-slate-300 font-bold text-xs">✕</button>
       </div>
 
-      <!-- Live Video Viewport -->
       <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-dart-border flex items-center justify-center">
         <video id="camera-video-feed" autoplay playsinline muted class="w-full h-full object-cover"></video>
         <canvas id="camera-capture-canvas" class="hidden"></canvas>
-        <!-- Aiming Ring Overlay -->
         <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div class="w-40 h-40 sm:w-48 sm:h-48 rounded-full border-2 border-dashed border-emerald-400/70 flex items-center justify-center">
             <div class="w-2 h-2 rounded-full bg-rose-500"></div>
           </div>
         </div>
-        <!-- Fallback / Permission Overlay -->
         <div id="camera-status-overlay" class="hidden absolute inset-0 bg-slate-950/90 p-4 flex flex-col items-center justify-center text-center space-y-2.5">
           <p id="camera-status-text" class="text-xs text-slate-200 font-semibold max-w-xs">Camera wordt gestart...</p>
           <div class="flex flex-wrap justify-center gap-2">
@@ -746,7 +766,6 @@
         </div>
       </div>
 
-      <!-- Camera Controls -->
       <div class="grid grid-cols-3 gap-2">
         <button onclick="app.captureAndAnalyzeCameraFrame()" class="col-span-2 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg transition">
           📸 Scan Pijlen Nu
@@ -756,7 +775,6 @@
         </button>
       </div>
 
-      <!-- Optional Gemini API Key Bar (for GitHub Pages / Standalone) -->
       <div class="bg-dart-bg border border-dart-border rounded-xl p-2.5 flex items-center justify-between gap-2 text-[11px]">
         <span id="gemini-key-status" class="text-slate-400 truncate">🔑 AI Vision: Klaar (of stel eigen sleutel in)</span>
         <button onclick="app.toggleGeminiKeyInput()" class="px-2 py-1 rounded bg-dart-card text-emerald-300 font-bold shrink-0">Sleutel</button>
@@ -766,7 +784,6 @@
         <button onclick="app.saveGeminiApiKey()" class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-black text-xs">Opslaan</button>
       </div>
 
-      <!-- Detected Darts Review Box -->
       <div id="camera-result-box" class="hidden bg-dart-bg border border-emerald-500/40 rounded-xl p-3 space-y-2.5">
         <div class="flex items-center justify-between">
           <span class="text-xs font-extrabold text-emerald-400">Gedetecteerde Worp (pas evt. aan):</span>
@@ -1015,6 +1032,7 @@
         this.currentScreen = 'setup';
         this.inputMode = 'numpad';
         this.boardMultiplier = 1;
+        this.trainingDartMult = 1;
         this.numpadBuffer = '';
         this.currentDarts = [];
         this.undoStack = [];
@@ -1520,7 +1538,7 @@
       submitTotalScore(score) {
         if (!this.isHumanTurnActive()) return;
         if (this.match.isCricket) {
-          this.showToast('Gebruik "Per Pijl (Bord)" om Cricket-vakken te registreren!', 'info');
+          this.showToast('Gebruik "Per Pijl" om Cricket-vakken te registreren!', 'info');
           this.setInputMode('board');
           return;
         }
@@ -1548,6 +1566,21 @@
 
         if (rem < 0 || (needsFin && rem === 1)) {
           this.clearNumpad();
+          const prevRem = activeObj.score;
+          const wasFinishZone = prevRem <= 50 || (prevRem <= 170 && !BOGEY_NUMBERS.has(prevRem));
+          if (wasFinishZone && this.match.checkoutRule !== 'straight') {
+            this.pendingCheckoutData = { score: 0, isCheckout: false, isBustTurn: true, attemptedScore: score };
+            const modal = document.getElementById('modal-checkout');
+            document.getElementById('checkout-modal-title').textContent = `BUST (${score} op ${prevRem})`;
+            document.getElementById('checkout-modal-desc').textContent = 'Hoeveel pijlen heb je in deze bust-beurt op een dubbel gegooid?';
+            document.getElementById('checkout-modal-options').innerHTML = [0, 1, 2, 3].map(att => `
+              <button onclick="app.confirmBustDoubleAttempts(${att})" class="py-3 rounded-xl bg-rose-950/70 hover:bg-rose-800/70 text-rose-200 font-black text-sm border border-rose-700">
+                ${att}x Dubbel
+              </button>
+            `).join('');
+            modal.classList.remove('hidden');
+            return;
+          }
           this.saveUndoSnapshot();
           this.sound.playBust();
           this.sound.speakCall('Bust!');
@@ -1574,6 +1607,18 @@
         this.saveUndoSnapshot();
         this.playScoreAnnouncement(score);
         this.recordTurn(activeSide, score, 3, false, 0, false);
+      }
+
+      confirmBustDoubleAttempts(doubleAttempts) {
+        if (!this.pendingCheckoutData) return;
+        const activeSide = this.match.turn;
+        const attempted = this.pendingCheckoutData.attemptedScore;
+        this.closeCheckoutPrompt();
+        this.saveUndoSnapshot();
+        this.sound.playBust();
+        this.sound.speakCall('Bust!');
+        this.showToast(`BUST (${attempted}) • ${doubleAttempts}x dubbelpoging geregistreerd`, 'error');
+        this.recordTurn(activeSide, 0, 3, true, Number(doubleAttempts) || 0, false);
       }
 
       openCheckoutPrompt(score, isCheckout) {
@@ -1704,7 +1749,10 @@
           this.sound.playBust();
           this.sound.speakCall('Bust!');
           this.showToast(`BUST! (${label} op ${remBefore})`, 'error');
-          const attempts = this.currentDarts.filter(d => d.wasDoubleTarget).length;
+          const doubleDartsInTurn = this.currentDarts.filter(d =>
+            d.wasDoubleTarget || (d.value === 25 && d.mult === 2) || d.label.startsWith('D')
+          ).length;
+          const attempts = Math.min(3, Math.max(doubleDartsInTurn, this.currentDarts.filter(d => d.wasDoubleTarget).length));
           const used = this.currentDarts.length;
           setTimeout(() => {
             this.saveUndoSnapshot();
@@ -2497,6 +2545,7 @@
         this.sound.init();
         this.trainingDartsBuffer = [];
         this.trainingUndoStack = [];
+        this.trainingDartMult = 1;
         const dateStr = new Date().toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
         if (modeKey === '121') {
@@ -2613,6 +2662,11 @@
         this.exitTrainingArena();
       }
 
+      setTrainingDartMult(mult) {
+        this.trainingDartMult = mult;
+        this.renderTrainingArena();
+      }
+
       renderScoreTypeBoxHTML(inputId, onSubmitExpr, quickScores = [26, 41, 45, 60, 85, 100]) {
         return `
           <div class="bg-dart-bg border border-dart-border rounded-2xl p-3 space-y-2">
@@ -2640,13 +2694,33 @@
       }
 
       renderPerDartHelperHTML() {
+        const mult = this.trainingDartMult || 1;
+        const prefix = mult === 3 ? 'T' : mult === 2 ? 'D' : 'S';
+
         const slots = [0, 1, 2].map(i => {
           const d = this.trainingDartsBuffer[i];
           return `<div class="py-1.5 rounded-lg bg-dart-bg text-center font-mono text-xs font-extrabold ${d ? 'text-emerald-300 border border-emerald-500/40' : 'text-slate-500 border border-dart-border'}">${d ? d.label : `Pijl ${i + 1}`}</div>`;
         }).join('');
 
+        const multBar = `
+          <div class="grid grid-cols-3 gap-1.5">
+            <button type="button" onclick="app.setTrainingDartMult(1)"
+              class="py-1.5 rounded-lg font-extrabold text-xs transition ${mult === 1 ? 'bg-emerald-500 text-slate-950' : 'bg-dart-card text-slate-300 border border-dart-border hover:border-emerald-500/50'}">
+              Single (1×)
+            </button>
+            <button type="button" onclick="app.setTrainingDartMult(2)"
+              class="py-1.5 rounded-lg font-extrabold text-xs transition ${mult === 2 ? 'bg-amber-400 text-slate-950' : 'bg-dart-card text-slate-300 border border-dart-border hover:border-amber-400/50'}">
+              Double (2×)
+            </button>
+            <button type="button" onclick="app.setTrainingDartMult(3)"
+              class="py-1.5 rounded-lg font-extrabold text-xs transition ${mult === 3 ? 'bg-rose-500 text-white' : 'bg-dart-card text-slate-300 border border-dart-border hover:border-rose-500/50'}">
+              Triple (3×)
+            </button>
+          </div>
+        `;
+
         const nums = Array.from({ length: 20 }, (_, i) => i + 1).map(n =>
-          `<button type="button" onclick="app.addTrainingDart(${n}, 1, 'S${n}')" class="py-1 rounded bg-dart-card hover:bg-slate-800 font-mono text-[11px] font-bold text-white border border-dart-border">${n}</button>`
+          `<button type="button" onclick="app.addTrainingDart(${n}, ${mult}, '${prefix}${n}')" class="py-1.5 rounded bg-dart-card hover:bg-slate-800 font-mono text-[11px] font-bold text-white border border-dart-border">${prefix}${n}</button>`
         ).join('');
 
         return `
@@ -2656,10 +2730,12 @@
               <button type="button" onclick="app.trainingDartsBuffer.pop(); app.renderTrainingArena()" class="text-rose-400 font-bold">← Pijl</button>
             </div>
             <div class="grid grid-cols-3 gap-1.5">${slots}</div>
+            ${multBar}
             <div class="grid grid-cols-10 gap-1">${nums}</div>
-            <div class="grid grid-cols-4 gap-1 text-xs font-mono font-bold">
+            <div class="grid grid-cols-5 gap-1 text-xs font-mono font-bold">
               <button type="button" onclick="app.addTrainingDart(20, 3, 'T20')" class="py-1.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">T20</button>
               <button type="button" onclick="app.addTrainingDart(20, 2, 'D20')" class="py-1.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">D20</button>
+              <button type="button" onclick="app.addTrainingDart(25, 1, '25')" class="py-1.5 rounded bg-emerald-950/70 text-emerald-300 border border-emerald-700">25</button>
               <button type="button" onclick="app.addTrainingDart(25, 2, 'Bull')" class="py-1.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40">Bull</button>
               <button type="button" onclick="app.addTrainingDart(0, 1, 'Mis')" class="py-1.5 rounded bg-dart-card text-slate-400 border border-dart-border">Mis</button>
             </div>
@@ -3101,7 +3177,7 @@
       }
 
       /* ===================================================================== */
-      /* CAREER DASHBOARD & HEATMAP                                            */
+      /* CAREER DASHBOARD, PER-GAME DATABASE & HEATMAP                         */
       /* ===================================================================== */
       renderCareerDashboard() {
         const all = this.matches;
@@ -3179,7 +3255,90 @@
             `).join('')
           : '<p class="text-slate-500">Nog geen trainingsessies opgeslagen.</p>';
 
+        this.renderPerGameDatabase();
         this.renderCareerHeatmap();
+      }
+
+      renderPerGameDatabase() {
+        const grid = document.getElementById('per-game-database-grid');
+        if (!grid) return;
+        const filter = document.getElementById('db-game-filter')?.value || 'ALL';
+
+        const gameDefs = [
+          { key: '501', label: '501', kind: 'match', matchFn: m => !m.isCricket && Number(m.startScore) === 501 },
+          { key: '301', label: '301', kind: 'match', matchFn: m => !m.isCricket && Number(m.startScore) === 301 },
+          { key: '170', label: '170', kind: 'match', matchFn: m => !m.isCricket && Number(m.startScore) === 170 },
+          { key: '701', label: '701', kind: 'match', matchFn: m => !m.isCricket && Number(m.startScore) === 701 },
+          { key: 'cricket', label: 'Cricket', kind: 'match', matchFn: m => Boolean(m.isCricket) },
+          { key: '121', label: '121 Checkout Klimmen', kind: 'training', matchFn: t => t.type === '121' },
+          { key: 'atc', label: 'Around the Clock', kind: 'training', matchFn: t => t.type === 'atc' },
+          { key: 'bobs27', label: "Bob's 27", kind: 'training', matchFn: t => t.type === 'bobs27' },
+          { key: '99darts', label: '99 Darts op 20', kind: 'training', matchFn: t => t.type === '99darts' },
+          { key: 'countup', label: 'Count-Up', kind: 'training', matchFn: t => t.type === 'countup' },
+          { key: 'jdc', label: 'JDC Challenge', kind: 'training', matchFn: t => t.type === 'jdc' },
+          { key: 'halveit', label: 'Halve-It', kind: 'training', matchFn: t => t.type === 'halveit' },
+          { key: 'catch40', label: 'Catch 40', kind: 'training', matchFn: t => t.type === 'catch40' }
+        ];
+
+        const activeDefs = filter === 'ALL' ? gameDefs : gameDefs.filter(g => g.key === filter);
+
+        grid.innerHTML = activeDefs.map(def => {
+          if (def.kind === 'match') {
+            const items = this.matches.filter(def.matchFn);
+            const wins = items.filter(m => m.winner === 'player').length;
+            let pts = 0, darts = 0;
+            items.forEach(m => {
+              pts += m.player.totalPointsScored || 0;
+              darts += m.player.totalDartsThrown || 0;
+            });
+            const avg = darts > 0 ? ((pts / darts) * 3).toFixed(1) : '-';
+            const rowsHtml = items.length
+              ? items.slice(0, 5).map(m => `
+                  <div class="flex items-center justify-between text-[11px] py-1 border-t border-dart-border/50">
+                    <span class="text-slate-400 truncate">${m.date} • ${m.aiProfile?.name || 'Bot'}</span>
+                    <span class="font-mono font-bold ${m.winner === 'player' ? 'text-emerald-400' : 'text-rose-400'}">${m.player.legs}-${m.ai.legs}</span>
+                  </div>
+                `).join('')
+              : `<div class="text-[11px] text-slate-500 pt-2 border-t border-dart-border/50">Nog geen wedstrijden in ${def.label}.</div>`;
+
+            return `
+              <div class="bg-dart-bg border border-dart-border rounded-xl p-3.5 flex flex-col justify-between space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-extrabold text-sm text-white">${def.label}</span>
+                  <span class="font-mono text-xs font-bold text-emerald-400">${items.length}x (${wins}W)</span>
+                </div>
+                <div class="text-[11px] text-slate-400 font-mono">Gemiddelde: <strong class="text-white">${avg}</strong></div>
+                <div>${rowsHtml}</div>
+              </div>
+            `;
+          } else {
+            const items = this.trainingSessions.filter(def.matchFn);
+            const best = items.length
+              ? (def.key === 'atc'
+                ? Math.min(...items.map(x => Number(x.numericScore) || 999)) + ' pijlen'
+                : Math.max(...items.map(x => Number(x.numericScore) || 0)))
+              : '-';
+            const rowsHtml = items.length
+              ? items.slice(0, 5).map(t => `
+                  <div class="flex items-center justify-between text-[11px] py-1 border-t border-dart-border/50">
+                    <span class="text-slate-400 truncate">${t.date}</span>
+                    <span class="font-mono font-bold text-emerald-400">${t.highlightMetric}</span>
+                  </div>
+                `).join('')
+              : `<div class="text-[11px] text-slate-500 pt-2 border-t border-dart-border/50">Nog geen sessies in ${def.label}.</div>`;
+
+            return `
+              <div class="bg-dart-bg border border-dart-border rounded-xl p-3.5 flex flex-col justify-between space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-extrabold text-sm text-white">${def.label}</span>
+                  <span class="font-mono text-xs font-bold text-sky-400">${items.length}x</span>
+                </div>
+                <div class="text-[11px] text-slate-400 font-mono">Beste record: <strong class="text-amber-300">${best}</strong></div>
+                <div>${rowsHtml}</div>
+              </div>
+            `;
+          }
+        }).join('');
       }
 
       renderCareerHeatmap() {
