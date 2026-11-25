@@ -253,7 +253,7 @@
           <span id="hud-format" class="font-semibold text-slate-400">Best of 5 Legs</span>
         </div>
         <div class="flex items-center gap-1.5">
-          <button onclick="app.undoLastTurn()" class="px-2.5 py-1 rounded-lg bg-dart-card hover:bg-slate-800 text-slate-200 font-bold border border-dart-border transition">
+          <button onclick="app.undoLastTurn()" title="Sneltoets: U" class="px-2.5 py-1 rounded-lg bg-dart-card hover:bg-slate-800 text-slate-200 font-bold border border-dart-border transition">
             ↩️ Undo
           </button>
           <button onclick="app.toggleMobileHistoryModal()" class="lg:hidden px-2.5 py-1 rounded-lg bg-dart-card text-slate-200 font-bold border border-dart-border">
@@ -354,9 +354,12 @@
               </button>
             </div>
 
-            <div class="flex items-center gap-1.5">
-              <button id="btn-voice-score" onclick="app.startVoiceScoreInput()" class="px-2.5 py-1.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/40 text-xs font-extrabold transition">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <button id="btn-voice-score" onclick="app.startVoiceScoreInput()" title="Sneltoets: V" class="px-2.5 py-1.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/40 text-xs font-extrabold transition">
                 🎤 Zeg Score
+              </button>
+              <button id="btn-voice-keep-mode" onclick="app.toggleKeepVoiceActive()" title="Blijf luisteren na elke verwerkte score" class="px-2 py-1.5 rounded-xl bg-dart-card text-slate-300 border border-dart-border text-[11px] font-bold transition">
+                🔁 Auto-Mic: UIT
               </button>
               <button onclick="app.openCameraScanner('match')" class="px-2.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-extrabold transition">
                 📷 AI Camera
@@ -378,8 +381,11 @@
             </div>
 
             <!-- Score Display Bar -->
-            <div class="bg-dart-bg border border-dart-border rounded-xl px-4 py-2 flex items-center justify-between">
-              <span class="text-xs font-bold uppercase text-slate-400">Ingevoerde Score</span>
+            <div class="bg-dart-bg border border-dart-border rounded-xl px-4 py-2 flex items-center justify-between gap-2">
+              <div>
+                <span class="text-xs font-bold uppercase text-slate-400 block">Ingevoerde Score</span>
+                <span class="text-[10px] text-slate-500">Toetsenbord: cijfers, Enter, Backspace, U, V</span>
+              </div>
               <span id="numpad-display" class="font-mono text-3xl sm:text-4xl font-black text-emerald-400">0</span>
             </div>
 
@@ -793,7 +799,7 @@
         <button onclick="app.closePwaInstallModal()" class="text-slate-400 font-bold">✕</button>
       </div>
       <p class="text-slate-300 leading-relaxed">
-        <strong>iPhone (Safari):</strong> Open jouw link (<code class="text-emerald-400">daanbaselmans.github.io/Dartgames/</code>), tik onderin op het <strong>Deel-icoon</strong> en kies <em>"Zet op beginscherm"</em>.
+        <strong>iPhone (Safari):</strong> Open jouw link (<code class="text-emerald-400">daanbaselmans.github.io/Dartbotpro/</code>), tik onderin op het <strong>Deel-icoon</strong> en kies <em>"Zet op beginscherm"</em>.
       </p>
       <p class="text-slate-300 leading-relaxed">
         <strong>Android (Chrome):</strong> Tik rechtsboven op de <strong>3 puntjes (⋮)</strong> en kies <em>"App installeren"</em> of <em>"Toevoegen aan startscherm"</em>.
@@ -868,13 +874,22 @@
       19: '3 D8', 18: 'D9', 17: '1 D8', 16: 'D8',
       15: '7 D4', 14: 'D7', 13: '5 D4', 12: 'D6',
       11: '3 D4', 10: 'D5', 9: '1 D4', 8: 'D4',
-      7: '3 D2', 6: 'D3', 5: '1 D2', 4: 'D2', 3: '1 D1', 2: 'D1'
+      7: '3 D2', 6: 'D3', 5: '1 D2', 4: 'D2',
+      3: '1 D1', 2: 'D1'
     };
 
     class SoundEngine {
       constructor() {
         this.ctx = null;
-        this.callerEnabled = true;
+        const savedCaller = localStorage.getItem('dartbot_pro_caller_enabled');
+        this.callerEnabled = savedCaller === null ? true : savedCaller === 'true';
+      }
+
+      setCallerEnabled(enabled) {
+        this.callerEnabled = Boolean(enabled);
+        try {
+          localStorage.setItem('dartbot_pro_caller_enabled', String(this.callerEnabled));
+        } catch (e) {}
       }
 
       init() {
@@ -944,7 +959,7 @@
           utter.onerror = () => setTimeout(finishOnce, 250);
 
           window.speechSynthesis.speak(utter);
-          setTimeout(finishOnce, 2600);
+          setTimeout(finishOnce, 2800);
         } catch (e) {
           if (typeof onFinished === 'function') setTimeout(onFinished, 900);
         }
@@ -965,6 +980,8 @@
         this.undoStack = [];
         this.aiTimers = [];
         this.pendingCheckoutData = null;
+        this.keepVoiceActive = localStorage.getItem('dartbot_pro_keep_voice') === 'true';
+        this.activeRecognition = null;
 
         this.cameraContext = 'match';
         this.cameraStream = null;
@@ -991,6 +1008,7 @@
 
         this.loadStorage();
         this.initUI();
+        this.bindKeyboardShortcuts();
       }
 
       loadStorage() {
@@ -1021,7 +1039,6 @@
       }
 
       initUI() {
-        // Build AI Levels Grid
         const grid = document.getElementById('ai-levels-grid');
         if (grid) {
           grid.innerHTML = AI_LEVELS.map(ai => `
@@ -1036,7 +1053,6 @@
           `).join('');
         }
 
-        // Build Quick Numbers 1-20
         const numBox = document.getElementById('board-quick-numbers');
         if (numBox) {
           numBox.innerHTML = Array.from({ length: 20 }, (_, i) => i + 1).map(n => `
@@ -1045,10 +1061,61 @@
           `).join('');
         }
 
-        // Build Interactive SVG Dartboard
         this.renderInteractiveBoardSVG();
         this.updateSetupUI();
+        this.updateCallerButtonUI();
+        this.updateKeepVoiceButtonUI();
         this.updateGeminiKeyStatusUI();
+      }
+
+      bindKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+          const target = e.target;
+          const isTypingField = target && (
+            target.tagName === 'INPUT' ||
+            target.tagName === 'TEXTAREA' ||
+            target.tagName === 'SELECT' ||
+            target.isContentEditable
+          );
+          if (isTypingField) return;
+
+          const checkoutOpen = !document.getElementById('modal-checkout')?.classList.contains('hidden');
+          const statsOpen = !document.getElementById('modal-stats')?.classList.contains('hidden');
+          const cameraOpen = !document.getElementById('modal-camera')?.classList.contains('hidden');
+          const histOpen = !document.getElementById('modal-mobile-history')?.classList.contains('hidden');
+          const pwaOpen = !document.getElementById('modal-pwa')?.classList.contains('hidden');
+
+          if (e.key === 'Escape') {
+            if (checkoutOpen) this.closeCheckoutPrompt();
+            else if (statsOpen) this.closeStatsModal();
+            else if (cameraOpen) this.closeCameraScanner();
+            else if (histOpen) this.toggleMobileHistoryModal();
+            else if (pwaOpen) this.closePwaInstallModal();
+            else if (this.currentScreen === 'game' && this.inputMode === 'numpad') this.clearNumpad();
+            return;
+          }
+
+          if (checkoutOpen || statsOpen || cameraOpen || histOpen || pwaOpen) return;
+
+          if (this.currentScreen === 'game') {
+            if (/^[0-9]$/.test(e.key) && this.inputMode === 'numpad' && this.isHumanTurnActive()) {
+              e.preventDefault();
+              this.pressNumpad(e.key);
+            } else if (e.key === 'Enter' && this.inputMode === 'numpad' && this.isHumanTurnActive()) {
+              e.preventDefault();
+              this.confirmNumpadScore();
+            } else if (e.key === 'Backspace' && this.inputMode === 'numpad' && this.isHumanTurnActive()) {
+              e.preventDefault();
+              this.backspaceNumpad();
+            } else if (e.key.toLowerCase() === 'u') {
+              e.preventDefault();
+              this.undoLastTurn();
+            } else if (e.key.toLowerCase() === 'v') {
+              e.preventDefault();
+              this.startVoiceScoreInput();
+            }
+          }
+        });
       }
 
       renderInteractiveBoardSVG() {
@@ -1153,15 +1220,38 @@
         }
       }
 
-      toggleCallerVoice() {
-        this.sound.callerEnabled = !this.sound.callerEnabled;
+      updateCallerButtonUI() {
         const btn = document.getElementById('btn-caller-toggle');
-        if (btn) {
-          btn.textContent = this.sound.callerEnabled ? '🗣️ Caller: AAN' : '🔇 Caller: UIT';
-          btn.classList.toggle('text-emerald-300', this.sound.callerEnabled);
-          btn.classList.toggle('text-slate-400', !this.sound.callerEnabled);
-        }
+        if (!btn) return;
+        btn.textContent = this.sound.callerEnabled ? '🗣️ Caller: AAN' : '🔇 Caller: UIT';
+        btn.classList.toggle('text-emerald-300', this.sound.callerEnabled);
+        btn.classList.toggle('text-slate-400', !this.sound.callerEnabled);
+      }
+
+      toggleCallerVoice() {
+        this.sound.setCallerEnabled(!this.sound.callerEnabled);
+        this.updateCallerButtonUI();
         if (this.sound.callerEnabled) this.sound.speakCall('Caller enabled');
+      }
+
+      updateKeepVoiceButtonUI() {
+        const btn = document.getElementById('btn-voice-keep-mode');
+        if (!btn) return;
+        btn.textContent = this.keepVoiceActive ? '🔁 Auto-Mic: AAN' : '🔁 Auto-Mic: UIT';
+        btn.className = this.keepVoiceActive
+          ? 'px-2 py-1.5 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[11px] font-bold transition'
+          : 'px-2 py-1.5 rounded-xl bg-dart-card text-slate-300 border border-dart-border text-[11px] font-bold transition';
+      }
+
+      toggleKeepVoiceActive() {
+        this.keepVoiceActive = !this.keepVoiceActive;
+        try {
+          localStorage.setItem('dartbot_pro_keep_voice', String(this.keepVoiceActive));
+        } catch (e) {}
+        this.updateKeepVoiceButtonUI();
+        if (this.keepVoiceActive && this.currentScreen === 'game' && this.isHumanTurnActive()) {
+          this.startVoiceScoreInput();
+        }
       }
 
       /* ===================================================================== */
@@ -1254,6 +1344,8 @@
 
         if (this.match.turn === 'ai' && !isHuman) {
           this.triggerAiTurn();
+        } else if (this.keepVoiceActive && this.isHumanTurnActive()) {
+          setTimeout(() => this.startVoiceScoreInput(), 450);
         }
       }
 
@@ -1313,6 +1405,12 @@
         document.getElementById('numpad-display').textContent = this.numpadBuffer;
       }
 
+      backspaceNumpad() {
+        if (!this.isHumanTurnActive()) return;
+        this.numpadBuffer = this.numpadBuffer.slice(0, -1);
+        document.getElementById('numpad-display').textContent = this.numpadBuffer || '0';
+      }
+
       clearNumpad() {
         this.numpadBuffer = '';
         document.getElementById('numpad-display').textContent = '0';
@@ -1352,6 +1450,20 @@
           return score >= 2 && score <= 180 && !imp.has(score);
         }
         return score >= 2 && score <= 170 && !BOGEY_NUMBERS.has(score);
+      }
+
+      announceRequirementIfNeeded(remainingScore, isCheckout = false) {
+        if (isCheckout) {
+          this.sound.speakCall('Game shot!', true);
+          return;
+        }
+        if (!this.match || this.match.isFinished || this.match.isCricket) return;
+        if (remainingScore > 1 && remainingScore <= 170) {
+          const route = this.getCheckoutSuggestion(remainingScore, this.match.checkoutRule);
+          if (route || remainingScore <= 50) {
+            this.sound.speakCall(`You require ${remainingScore}`, false);
+          }
+        }
       }
 
       submitTotalScore(score) {
@@ -1409,7 +1521,9 @@
 
         this.clearNumpad();
         this.saveUndoSnapshot();
-        this.playScoreAnnouncement(score);
+        this.playScoreAnnouncement(score, () => {
+          this.announceRequirementIfNeeded(rem, false);
+        });
         this.recordTurn(activeSide, score, 3, false, 0, false);
       }
 
@@ -1449,6 +1563,7 @@
         if (!this.pendingCheckoutData) return;
         const { score, isCheckout } = this.pendingCheckoutData;
         const activeSide = this.match.turn;
+        const remAfter = Math.max(0, this.match[activeSide].score - score);
         this.closeCheckoutPrompt();
         this.clearNumpad();
         this.saveUndoSnapshot();
@@ -1457,7 +1572,9 @@
           this.sound.playGameShot();
           this.sound.speakCall('Game shot!', true);
         } else {
-          this.playScoreAnnouncement(score);
+          this.playScoreAnnouncement(score, () => {
+            this.announceRequirementIfNeeded(remAfter, false);
+          });
         }
         this.recordTurn(activeSide, score, dartsUsed, false, doubleAttempts, isCheckout);
       }
@@ -1471,7 +1588,6 @@
         this.sound.playDartThud(mult === 3 || value === 25);
         if (activeSide === 'player') this.recordDartHeatmapHit(value, mult);
 
-        // CRICKET DART
         if (this.match.isCricket) {
           this.currentDarts.push({ value, mult, label, points });
           this.updateCurrentDartsUI();
@@ -1515,7 +1631,6 @@
           return;
         }
 
-        // X01 DART
         let effPoints = points;
         if (this.match.inRule === 'double' && !activeObj.hasOpened) {
           if (mult === 2) {
@@ -1577,7 +1692,9 @@
             this.saveUndoSnapshot();
             this.currentDarts = [];
             this.updateCurrentDartsUI();
-            this.playScoreAnnouncement(totalScore);
+            this.playScoreAnnouncement(totalScore, () => {
+              this.announceRequirementIfNeeded(remAfter, false);
+            });
             this.recordTurn(activeSide, totalScore, 3, false, attempts, false, labels);
           }, 300);
         }
@@ -1652,7 +1769,9 @@
         this.updateGameUI();
 
         if (this.match.turn === 'ai' && this.match.opponentType !== 'human') {
-          this.triggerAiTurn(1850);
+          this.triggerAiTurn(1900);
+        } else if (this.keepVoiceActive && this.isHumanTurnActive()) {
+          setTimeout(() => this.startVoiceScoreInput(), 550);
         }
       }
 
@@ -1670,16 +1789,18 @@
         this.match.turn = side === 'player' ? 'ai' : 'player';
         this.updateGameUI();
         if (this.match.turn === 'ai' && this.match.opponentType !== 'human') {
-          this.triggerAiTurn(1850);
+          this.triggerAiTurn(1900);
+        } else if (this.keepVoiceActive && this.isHumanTurnActive()) {
+          setTimeout(() => this.startVoiceScoreInput(), 550);
         }
       }
 
-      triggerAiTurn(delayMs = 1750) {
+      triggerAiTurn(delayMs = 1850) {
         this.clearAiTimers();
         const t = setTimeout(() => {
           if (!this.match || this.match.isFinished || this.match.turn !== 'ai') return;
           if (this.sound.callerEnabled && 'speechSynthesis' in window && window.speechSynthesis.speaking) {
-            this.triggerAiTurn(500);
+            this.triggerAiTurn(550);
             return;
           }
           const sim = this.simulateAiTurn();
@@ -1691,6 +1812,7 @@
             this.sound.speakCall(sim.darts.map(d => d.label).join(' '));
             this.recordCricketTurn('ai', sim.darts.length, sim.darts, sim.isCheckout);
           } else {
+            const remAfterAi = sim.isBust ? this.match.ai.score : Math.max(0, this.match.ai.score - sim.totalScored);
             if (sim.isCheckout) {
               this.sound.playGameShot();
               this.sound.speakCall('Game shot!', true);
@@ -1698,7 +1820,9 @@
               this.sound.playBust();
               this.sound.speakCall('Bust!');
             } else {
-              this.playScoreAnnouncement(sim.totalScored);
+              this.playScoreAnnouncement(sim.totalScored, () => {
+                this.announceRequirementIfNeeded(remAfterAi, false);
+              });
             }
             this.recordTurn('ai', sim.totalScored, sim.darts.length, sim.isBust, sim.doubleAttempts, sim.isCheckout, sim.darts);
           }
@@ -1721,7 +1845,7 @@
           const darts = [];
           let isWin = false;
           for (let i = 0; i < 3; i++) {
-            let tgt = targets.find(t => (ai.cricketMarks[t] || 0) < 3) || targets.find(t => (this.match.player.cricketMarks[t] || 0) < 3) || 20;
+            const tgt = targets.find(t => (ai.cricketMarks[t] || 0) < 3) || targets.find(t => (this.match.player.cricketMarks[t] || 0) < 3) || 20;
             const hit = Math.random() < (prof.expectedAvg / 125);
             const mult = hit ? (Math.random() < 0.35 ? (tgt === 25 ? 2 : 3) : 1) : 0;
             const val = mult > 0 ? tgt : 0;
@@ -1795,7 +1919,6 @@
             continue;
           }
 
-          // Scoring dart
           const targetDartAvg = prof.expectedAvg / 3;
           let pts = Math.max(0, Math.round(targetDartAvg + (Math.random() - 0.5) * prof.sigma));
           if (pts > 60) pts = 60;
@@ -1890,6 +2013,8 @@
 
         if (this.match.turn === 'ai' && !isHuman) {
           setTimeout(() => this.triggerAiTurn(), 600);
+        } else if (this.keepVoiceActive && this.isHumanTurnActive()) {
+          setTimeout(() => this.startVoiceScoreInput(), 650);
         }
       }
 
@@ -2030,20 +2155,40 @@
           this.showToast('Spraakherkenning wordt niet ondersteund in deze browser.', 'error');
           return;
         }
+        if (this.activeRecognition) {
+          try { this.activeRecognition.abort(); } catch (e) {}
+          this.activeRecognition = null;
+        }
+
         const rec = new SpeechRec();
+        this.activeRecognition = rec;
         rec.lang = 'nl-NL';
         rec.interimResults = false;
         rec.maxAlternatives = 1;
 
-        this.showToast('🎤 Luisteren... Noem je score (bijv. "60", "honderd" of "bust")', 'info');
+        const btn = document.getElementById('btn-voice-score');
+        if (btn) btn.textContent = '🎤 Luistert...';
+        this.showToast('🎤 Luisteren... Noem je score (of druk V)', 'info');
+
         rec.onresult = (event) => {
           const spoken = event.results[0][0].transcript.toLowerCase().trim();
           this.processSpokenScore(spoken);
         };
-        rec.onerror = () => {
-          this.showToast('Kon geen spraak verstaan. Probeer opnieuw.', 'error');
+        rec.onerror = (event) => {
+          if (event?.error !== 'aborted') {
+            this.showToast('Kon geen spraak verstaan. Tik op 🎤 of druk V.', 'error');
+          }
         };
-        rec.start();
+        rec.onend = () => {
+          this.activeRecognition = null;
+          if (btn) btn.textContent = '🎤 Zeg Score';
+        };
+        try {
+          rec.start();
+        } catch (e) {
+          this.activeRecognition = null;
+          if (btn) btn.textContent = '🎤 Zeg Score';
+        }
       }
 
       processSpokenScore(spoken) {
@@ -2171,7 +2316,7 @@
 
         this.showToast('🤖 AI analyseert dartbord...', 'info');
         const apiKey = localStorage.getItem('dartbot_gemini_api_key') || '';
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
         try {
           const res = await fetch(url, {
@@ -2515,7 +2660,6 @@
         }
       }
 
-      /* Individual Training Handlers */
       training121Visit(scored, dartsUsed, isCheckout) {
         const t = this.training;
         this.saveTrainingUndo();
@@ -2524,6 +2668,7 @@
 
         if (isCheckout || (rem === 0 && this.canFinishInOneTurn(t.remaining, 'double'))) {
           this.sound.playGameShot();
+          this.sound.speakCall('Game shot!', true);
           t.log.push(`✅ ${t.target} UIT in ${t.dartsUsedInTarget} pijlen!`);
           t.target++;
           if (t.target > t.highestReached) t.highestReached = t.target;
@@ -2534,9 +2679,11 @@
         }
         if (rem > 1 && t.dartsUsedInTarget < 9) {
           t.remaining = rem;
+          this.sound.speakCall(`You require ${t.remaining}`, false);
           t.log.push(`• ${scored} gegooid → rest ${t.remaining} (${9 - t.dartsUsedInTarget} pijlen over)`);
         } else {
           this.sound.playBust();
+          this.sound.speakCall('Bust!');
           t.log.push(`❌ ${t.target} gemist → terug naar ${Math.max(121, t.target - 1)}`);
           t.target = Math.max(121, t.target - 1);
           t.remaining = t.target;
@@ -2555,6 +2702,7 @@
         else if (t.currentTarget === 20) t.currentTarget = 25;
         else {
           this.sound.playGameShot();
+          this.sound.speakCall('Game shot!', true);
           this.completeAndPersistTraining(true);
           return;
         }
@@ -2583,6 +2731,7 @@
         t.roundIdx++;
         if (t.roundIdx >= t.targets.length) {
           this.sound.playGameShot();
+          this.sound.speakCall('Game shot!', true);
           this.completeAndPersistTraining(true);
           return;
         }
@@ -2594,9 +2743,11 @@
         this.saveTrainingUndo();
         t.dartsThrown += 3;
         t.score += pts;
+        this.playScoreAnnouncement(pts);
         t.log.push(`Pijl ${t.dartsThrown}/99: +${pts} → Totaal ${t.score}`);
         if (t.dartsThrown >= 99) {
           this.sound.playGameShot();
+          this.sound.speakCall('Game shot!', true);
           this.completeAndPersistTraining(true);
           return;
         }
@@ -2608,9 +2759,11 @@
         this.saveTrainingUndo();
         t.roundsPlayed++;
         t.score += pts;
+        this.playScoreAnnouncement(pts);
         t.log.push(`Beurt ${t.roundsPlayed}/8: +${pts} → Totaal ${t.score}`);
         if (t.roundsPlayed >= 8) {
           this.sound.playGameShot();
+          this.sound.speakCall('Game shot!', true);
           this.completeAndPersistTraining(true);
           return;
         }
@@ -2630,6 +2783,8 @@
         t.log.push(`${cur.label}: +${pts} ptn ${isShanghai ? '🔥 SHANGHAI!' : ''} → ${t.score}`);
         t.roundIdx++;
         if (t.roundIdx >= t.rounds.length) {
+          this.sound.playGameShot();
+          this.sound.speakCall('Game shot!', true);
           this.completeAndPersistTraining(true);
           return;
         }
@@ -2646,6 +2801,8 @@
         t.log.push(`${cur.label}: ${hit ? `✅ +${pts} ptn` : '❌ Mis'} → ${t.score}`);
         t.roundIdx++;
         if (t.roundIdx >= t.rounds.length) {
+          this.sound.playGameShot();
+          this.sound.speakCall('Game shot!', true);
           this.completeAndPersistTraining(true);
           return;
         }
@@ -2665,6 +2822,8 @@
         }
         t.roundIdx++;
         if (t.roundIdx >= t.stages.length) {
+          this.sound.playGameShot();
+          this.sound.speakCall('Game shot!', true);
           this.completeAndPersistTraining(true);
           return;
         }
@@ -2679,6 +2838,8 @@
         if (isCheckout || (rem === 0 && this.canFinishInOneTurn(t.remaining, 'double'))) {
           const earned = t.dartsUsed <= 3 ? 2 : 1;
           t.score += earned;
+          this.sound.playGameShot();
+          this.sound.speakCall('Game shot!', true);
           t.log.push(`✅ ${t.currentFinish} UIT (+${earned} pt) → ${t.score}`);
           t.currentFinish++;
           if (t.currentFinish > 100) {
@@ -2692,6 +2853,7 @@
         }
         if (rem > 1 && t.dartsUsed < 6) {
           t.remaining = rem;
+          this.sound.speakCall(`You require ${t.remaining}`, false);
           t.log.push(`• ${scored} op ${t.currentFinish} → rest ${t.remaining}`);
         } else {
           t.log.push(`❌ ${t.currentFinish} gemist`);
@@ -2725,7 +2887,7 @@
               <div><span class="text-[10px] uppercase text-slate-400 block">Record</span><span class="font-mono text-3xl font-black text-white">${t.highestReached}</span></div>
             </div>
             <div class="grid grid-cols-3 gap-2">
-              <button onclick="app.training121Visit(t.remaining, 3, true)" class="py-2.5 rounded-xl bg-emerald-500 text-slate-950 font-black text-xs">✅ Uitgegooid!</button>
+              <button onclick="app.training121Visit(app.training.remaining, 3, true)" class="py-2.5 rounded-xl bg-emerald-500 text-slate-950 font-black text-xs">✅ Uitgegooid!</button>
               <button onclick="app.training121Visit(45, 3, false)" class="py-2.5 rounded-xl bg-dart-card text-white font-bold text-xs border border-dart-border">45 Gegooid</button>
               <button onclick="app.openCameraScanner('training')" class="py-2.5 rounded-xl bg-amber-500/20 text-amber-300 font-extrabold text-xs border border-amber-500/40">📷 AI Cam</button>
             </div>
@@ -2819,7 +2981,7 @@
               <div><span class="text-[10px] uppercase text-slate-400 block">Score</span><span class="font-mono text-3xl font-black text-white">${t.score}</span></div>
             </div>
             <div class="grid grid-cols-3 gap-2">
-              <button onclick="app.trainingCatch40Visit(t.remaining, 3, true)" class="py-2.5 rounded-xl bg-emerald-500 text-slate-950 font-black text-xs">✅ Uit (+${t.dartsUsed === 0 ? 2 : 1} pt)</button>
+              <button onclick="app.trainingCatch40Visit(app.training.remaining, 3, true)" class="py-2.5 rounded-xl bg-emerald-500 text-slate-950 font-black text-xs">✅ Uit (+${t.dartsUsed === 0 ? 2 : 1} pt)</button>
               <button onclick="app.trainingCatch40Visit(0, 3, false)" class="py-2.5 rounded-xl bg-rose-950/70 text-rose-200 font-bold text-xs border border-rose-800">❌ Gemist</button>
               <button onclick="app.openCameraScanner('training')" class="py-2.5 rounded-xl bg-amber-500/20 text-amber-300 font-extrabold text-xs border border-amber-500/40">📷 Cam</button>
             </div>
@@ -2859,7 +3021,6 @@
         document.getElementById('kpi-checkout-stats').textContent = `${coPct}% / ${highCo || '-'}`;
         document.getElementById('kpi-power-scores').textContent = `${c100} / ${c140} / ${c180}`;
 
-        // Score Distribution
         const b0_40 = allTurnScores.filter(s => s <= 40).length;
         const b41_60 = allTurnScores.filter(s => s >= 41 && s <= 60).length;
         const b61_99 = allTurnScores.filter(s => s >= 61 && s <= 99).length;
@@ -2882,7 +3043,6 @@
           </div>
         `).join('');
 
-        // Matches List
         document.getElementById('career-matches-list').innerHTML = all.length
           ? all.slice(0, 20).map(m => `
               <div class="flex items-center justify-between p-2.5 rounded-xl bg-dart-bg border border-dart-border">
@@ -2897,7 +3057,6 @@
             `).join('')
           : '<p class="text-slate-500">Nog geen voltooide wedstrijden.</p>';
 
-        // Training List
         document.getElementById('career-training-list').innerHTML = this.trainingSessions.length
           ? this.trainingSessions.slice(0, 20).map(t => `
               <div class="flex items-center justify-between p-2.5 rounded-xl bg-dart-bg border border-dart-border">
