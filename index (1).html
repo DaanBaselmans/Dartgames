@@ -180,9 +180,9 @@
               <div>
                 <label class="block text-[11px] font-extrabold uppercase text-slate-400 mb-1.5">Starter</label>
                 <div id="setup-starter" class="grid grid-cols-3 gap-1.5">
-                  <button type="button" data-val="player" onclick="app.selectOption('starter', 'player')" class="setup-opt active py-2 rounded-xl bg-dart-card border border-dart-border text-[11px] font-bold">Jij</button>
-                  <button type="button" data-val="ai" onclick="app.selectOption('starter', 'ai')" class="setup-opt py-2 rounded-xl bg-dart-card border border-dart-border text-[11px] font-bold">Bot</button>
-                  <button type="button" data-val="random" onclick="app.selectOption('starter', 'random')" class="setup-opt py-2 rounded-xl bg-dart-card border border-dart-border text-[11px] font-bold">Bull</button>
+                  <button type="button" data-val="player" onclick="app.selectOption('starter', 'player')" class="setup-opt active py-2 rounded-xl bg-dart-card border border-dart-border text-11px font-bold">Jij</button>
+                  <button type="button" data-val="ai" onclick="app.selectOption('starter', 'ai')" class="setup-opt py-2 rounded-xl bg-dart-card border border-dart-border text-11px font-bold">Bot</button>
+                  <button type="button" data-val="random" onclick="app.selectOption('starter', 'random')" class="setup-opt py-2 rounded-xl bg-dart-card border border-dart-border text-11px font-bold">Bull</button>
                 </div>
               </div>
             </div>
@@ -262,7 +262,7 @@
 
               <div class="flex flex-wrap items-center gap-1.5">
                 <button id="btn-voice-score" onclick="app.startVoiceScoreInput()" class="px-2.5 py-1.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/40 text-xs font-extrabold transition" title="Spraakscore (V)">🎤 Zeg Score</button>
-                <button id="btn-voice-keep-mode" onclick="app.toggleKeepVoiceActive()" class="px-2 py-1.5 rounded-xl bg-dart-card text-slate-300 border border-dart-border text-[11px] font-bold transition">🔁 Auto-Mic: UIT</button>
+                <button id="btn-voice-keep-mode" onclick="app.toggleKeepVoiceActive()" class="px-2.5 py-1.5 rounded-xl bg-dart-card text-slate-300 border border-dart-border text-[11px] font-bold transition">🔁 Auto-Mic: UIT</button>
                 <button onclick="app.openCameraScanner('match')" class="px-2.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-extrabold transition">📷 AI Cam</button>
               </div>
             </div>
@@ -509,8 +509,10 @@
             <h2 id="arena-game-title" class="text-lg sm:text-xl font-black text-white">Training</h2>
             <p id="arena-game-subtitle" class="text-xs text-slate-400"></p>
           </div>
-          <div class="flex items-center gap-1.5">
-            <button onclick="app.undoTrainingStep()" class="px-3 py-1.5 rounded-xl bg-dart-card text-xs font-bold text-slate-200 border border-dart-border">↩ Stap Terug</button>
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button id="btn-training-voice" onclick="app.startVoiceScoreInput()" class="px-2.5 py-1.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/40 text-xs font-extrabold transition" title="Spraakscore (V)">🎤 Zeg Score</button>
+            <button id="btn-training-voice-keep" onclick="app.toggleKeepVoiceActive()" class="px-2 py-1.5 rounded-xl bg-dart-card text-slate-300 border border-dart-border text-[11px] font-bold transition">🔁 Auto-Mic: UIT</button>
+            <button onclick="app.undoTrainingStep()" class="px-3 py-1.5 rounded-xl bg-dart-card text-xs font-bold text-slate-200 border border-dart-border" title="Stap terug (U)">↩ Stap Terug</button>
             <button onclick="app.finishTrainingEarly()" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 text-xs font-extrabold border border-emerald-500/40">Opslaan &amp; Stop</button>
             <button onclick="app.exitTrainingArena()" class="px-3 py-1.5 rounded-xl bg-rose-950/70 text-rose-200 text-xs font-bold border border-rose-800">Sluiten</button>
           </div>
@@ -1565,6 +1567,27 @@
               e.preventDefault();
               this.startVoiceScoreInput();
             }
+          } else if (this.currentScreen === 'training' && this.training) {
+            if (e.key.toLowerCase() === 'v') {
+              e.preventDefault();
+              this.startVoiceScoreInput();
+            } else if (e.key.toLowerCase() === 'u') {
+              e.preventDefault();
+              this.undoTrainingStep();
+            } else if (/^[0-9]$/.test(e.key)) {
+              const scoreInp = document.querySelector('#arena-control-panel input[type="number"]');
+              if (scoreInp) {
+                e.preventDefault();
+                scoreInp.focus();
+                scoreInp.value = String(scoreInp.value || '') + e.key;
+              }
+            } else if (e.key === 'Enter') {
+              const scoreInp = document.querySelector('#arena-control-panel input[type="number"]');
+              if (scoreInp && scoreInp.value !== '') {
+                e.preventDefault();
+                scoreInp.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+              }
+            }
           }
         });
       }
@@ -1685,20 +1708,24 @@
       }
 
       updateKeepVoiceButtonUI() {
-        const btn = document.getElementById('btn-voice-keep-mode');
-        if (!btn) return;
-        btn.textContent = this.keepVoiceActive ? '🔁 Auto-Mic: AAN' : '🔁 Auto-Mic: UIT';
-        btn.className = this.keepVoiceActive
-          ? 'px-2 py-1.5 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[11px] font-bold transition'
-          : 'px-2 py-1.5 rounded-xl bg-dart-card text-slate-300 border border-dart-border text-[11px] font-bold transition';
+        const ids = ['btn-voice-keep-mode', 'btn-training-voice-keep'];
+        ids.forEach(id => {
+          const btn = document.getElementById(id);
+          if (!btn) return;
+          btn.textContent = this.keepVoiceActive ? '🔁 Auto-Mic: AAN' : '🔁 Auto-Mic: UIT';
+          btn.className = this.keepVoiceActive
+            ? 'px-2 py-1.5 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-500/40 text-[11px] font-bold transition'
+            : 'px-2 py-1.5 rounded-xl bg-dart-card text-slate-300 border border-dart-border text-[11px] font-bold transition';
+        });
       }
 
       toggleKeepVoiceActive() {
         this.keepVoiceActive = !this.keepVoiceActive;
         try { localStorage.setItem('dartbot_pro_keep_voice', String(this.keepVoiceActive)); } catch (e) {}
         this.updateKeepVoiceButtonUI();
-        if (this.keepVoiceActive && this.currentScreen === 'game' && this.isHumanTurnActive()) {
-          this.startVoiceScoreInput();
+        if (this.keepVoiceActive) {
+          if (this.currentScreen === 'game' && this.isHumanTurnActive()) this.startVoiceScoreInput();
+          else if (this.currentScreen === 'training' && this.training) this.startVoiceScoreInput();
         }
       }
 
@@ -2064,6 +2091,7 @@
 
         this.sound.playDartThud(mult === 3 || value === 25);
         if (activeSide === 'player') this.recordDartHeatmapHit(value, mult);
+        if (this.boardMultiplier !== 1) this.setBoardMultiplier(1);
 
         if (this.match.isCricket) {
           this.currentDarts.push({ value, mult, label, points });
@@ -2641,9 +2669,9 @@
         rec.interimResults = false;
         rec.maxAlternatives = 1;
 
-        const btn = document.getElementById('btn-voice-score');
-        if (btn) btn.textContent = '🎤 Luistert...';
-        this.showToast('🎤 Luisteren... Noem je score (of druk V)', 'info');
+        const btns = [document.getElementById('btn-voice-score'), document.getElementById('btn-training-voice')].filter(Boolean);
+        btns.forEach(b => { b.textContent = '🎤 Luistert...'; });
+        this.showToast('🎤 Luisteren... Noem je score of actie (of druk V)', 'info');
 
         rec.onresult = (event) => {
           const spoken = event.results[0][0].transcript.toLowerCase().trim();
@@ -2656,23 +2684,78 @@
         };
         rec.onend = () => {
           this.activeRecognition = null;
-          if (btn) btn.textContent = '🎤 Zeg Score';
+          btns.forEach(b => { b.textContent = '🎤 Zeg Score'; });
+          if (this.keepVoiceActive) {
+            if (this.currentScreen === 'game' && this.isHumanTurnActive()) {
+              setTimeout(() => { if (this.keepVoiceActive && !this.activeRecognition) this.startVoiceScoreInput(); }, 350);
+            } else if (this.currentScreen === 'training' && this.training) {
+              setTimeout(() => { if (this.keepVoiceActive && !this.activeRecognition && this.training) this.startVoiceScoreInput(); }, 350);
+            }
+          }
         };
         try {
           rec.start();
         } catch (e) {
           this.activeRecognition = null;
-          if (btn) btn.textContent = '🎤 Zeg Score';
+          btns.forEach(b => { b.textContent = '🎤 Zeg Score'; });
         }
       }
 
       processSpokenScore(spoken) {
         if (spoken.includes('bust') || spoken.includes('dood')) {
-          this.submitTotalScore(999);
+          if (this.currentScreen === 'training' && this.training?.type === '121') {
+            this.training121Visit(0, 3, false);
+          } else {
+            this.submitTotalScore(999);
+          }
           return;
         }
+
+        if (this.currentScreen === 'training' && this.training) {
+          const t = this.training;
+          if (spoken.includes('shanghai')) {
+            if (t.type === 'jdc' && t.rounds[t.roundIdx]?.kind === 'shanghai') {
+              this.showToast('🎤 Shanghai herkend!', 'success');
+              this.trainingJdcShanghaiTurn(6, true);
+              return;
+            }
+          }
+          if (spoken.includes('raak') || spoken.includes('hit') || spoken.includes('uit') || spoken.includes('finish')) {
+            if (t.type === 'atc') {
+              const pijlMatch = spoken.match(/\b([123])\b/);
+              this.trainingAtcAdvance(pijlMatch ? Number(pijlMatch[1]) : 1);
+              return;
+            }
+            if (t.type === 'jdc' && t.rounds[t.roundIdx]?.kind === 'double') {
+              this.trainingJdcDoubleTurn(true);
+              return;
+            }
+            if (t.type === '121' && spoken.includes('uit')) {
+              this.training121Visit(t.remaining, 3, true);
+              return;
+            }
+            if (t.type === 'catch40' && spoken.includes('uit')) {
+              this.trainingCatch40Visit(t.remaining, 3, true);
+              return;
+            }
+          }
+          if (spoken.includes('mis') || spoken.includes('gemist')) {
+            if (t.type === 'atc') { this.trainingAtcAdvance(0); return; }
+            if (t.type === 'bobs27') { this.trainingBobsTurn(0); return; }
+            if (t.type === 'jdc') {
+              if (t.rounds[t.roundIdx]?.kind === 'double') this.trainingJdcDoubleTurn(false);
+              else this.trainingJdcShanghaiTurn(0, false);
+              return;
+            }
+            if (t.type === 'halveit') { this.trainingHalveItTurn(0); return; }
+            if (t.type === 'catch40') { this.trainingCatch40Visit(0, 3, false); return; }
+          }
+        }
+
         const wordMap = {
-          'nul': 0, 'twintig': 20, 'zesentwintig': 26, 'veertig': 40, 'eenenveertig': 41,
+          'nul': 0, 'één': 1, 'een': 1, 'twee': 2, 'drie': 3, 'vier': 4, 'vijf': 5,
+          'zes': 6, 'zeven': 7, 'acht': 8, 'negen': 9, 'tien': 10, 'elf': 11, 'twaalf': 12,
+          'twintig': 20, 'zesentwintig': 26, 'veertig': 40, 'eenenveertig': 41,
           'vijfenveertig': 45, 'zestig': 60, 'tachtig': 80, 'vijfentachtig': 85,
           'honderd': 100, 'honderdtwintig': 120, 'honderdveertig': 140, 'honderdtachtig': 180
         };
@@ -2685,17 +2768,20 @@
         }
         if (parsed !== null && parsed >= 0 && parsed <= 180) {
           this.showToast(`🎤 Herkend: "${spoken}" → ${parsed}`, 'success');
-          if (this.currentScreen === 'training' && this.training?.type === '121') {
-            this.training121Visit(parsed, 3, false);
-          } else if (this.currentScreen === 'training' && this.training?.type === 'catch40') {
-            this.trainingCatch40Visit(parsed, 3, false);
-          } else if (this.currentScreen === 'training' && this.training?.type === 'countup') {
-            this.trainingCountUpTurn(parsed);
+          if (this.currentScreen === 'training' && this.training) {
+            const type = this.training.type;
+            if (type === '121') this.training121Visit(parsed, 3, false);
+            else if (type === 'catch40') this.trainingCatch40Visit(parsed, 3, false);
+            else if (type === 'countup') this.trainingCountUpTurn(parsed);
+            else if (type === '99darts') this.training99DartsTurn(parsed);
+            else if (type === 'halveit') this.trainingHalveItTurn(parsed);
+            else if (type === 'bobs27' && parsed <= 3) this.trainingBobsTurn(parsed);
+            else this.submitTotalScore(parsed);
           } else {
             this.submitTotalScore(parsed);
           }
         } else {
-          this.showToast(`Niet herkend als score: "${spoken}"`, 'error');
+          this.showToast(`Niet herkend: "${spoken}"`, 'error');
         }
       }
 
@@ -2980,7 +3066,11 @@
 
         document.getElementById('training-lobby-view').classList.add('hidden');
         document.getElementById('training-arena-view').classList.remove('hidden');
+        this.updateKeepVoiceButtonUI();
         this.renderTrainingArena();
+        if (this.keepVoiceActive) {
+          setTimeout(() => this.startVoiceScoreInput(), 350);
+        }
       }
 
       saveTrainingUndo() {
@@ -2996,6 +3086,10 @@
       }
 
       exitTrainingArena() {
+        if (this.activeRecognition) {
+          try { this.activeRecognition.abort(); } catch (e) {}
+          this.activeRecognition = null;
+        }
         this.training = null;
         document.getElementById('training-arena-view').classList.add('hidden');
         document.getElementById('training-lobby-view').classList.remove('hidden');
@@ -3044,7 +3138,7 @@
           <div class="bg-dart-bg border border-dart-border rounded-2xl p-3 space-y-2">
             <div class="flex items-center justify-between gap-2">
               <label for="${inputId}" class="text-xs font-extrabold uppercase text-slate-300">Typ je score (0–180)</label>
-              <span class="text-[11px] text-slate-400">Enter of snelknop</span>
+              <span class="text-[11px] text-slate-400">Enter, spraak (V) of snelknop</span>
             </div>
             <div class="flex gap-2">
               <input id="${inputId}" type="number" min="0" max="180" placeholder="Bijv. 60, 45, 26..."
@@ -3098,7 +3192,7 @@
         return `
           <div class="pt-3 border-t border-dart-border space-y-2">
             <div class="flex items-center justify-between text-xs">
-              <span class="font-bold text-slate-400">🎯 Per-Pijl Invoer (3 pijlen = automatische beurt):</span>
+              <span class="font-bold text-slate-400">🎯 Per-Pijl Invoer (3 pijlen = beurt, na D/T terug naar Single):</span>
               <button type="button" onclick="app.trainingDartsBuffer.pop(); app.renderTrainingArena()" class="text-rose-400 font-bold">← Pijl</button>
             </div>
             <div class="grid grid-cols-3 gap-1.5">${slots}</div>
@@ -3108,7 +3202,7 @@
               <button type="button" onclick="app.addTrainingDart(20, 3, 'T20')" class="py-1.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">T20</button>
               <button type="button" onclick="app.addTrainingDart(20, 2, 'D20')" class="py-1.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">D20</button>
               <button type="button" onclick="app.addTrainingDart(25, 1, '25')" class="py-1.5 rounded bg-emerald-950/70 text-emerald-300 border border-emerald-700">25</button>
-              <button type="button" onclick="app.addTrainingDart(25, 2, 'Bull')" class="py-1.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40">Bull</button>
+              <button type="button" onclick="app.addTrainingDart(25, 2, 'Bull')" class="py-1.5 rounded bg-rose-500/20 text-rose-300 border border-rose-700">Bull</button>
               <button type="button" onclick="app.addTrainingDart(0, 1, 'Mis')" class="py-1.5 rounded bg-dart-card text-slate-400 border border-dart-border">Mis</button>
             </div>
           </div>
@@ -3118,6 +3212,7 @@
       addTrainingDart(value, mult, label) {
         this.recordDartHeatmapHit(value, mult);
         this.trainingDartsBuffer.push({ value, mult, label, points: value * mult });
+        if (this.trainingDartMult !== 1) this.trainingDartMult = 1;
         if (this.trainingDartsBuffer.length >= 3) {
           const darts = [...this.trainingDartsBuffer];
           this.trainingDartsBuffer = [];
@@ -3359,13 +3454,20 @@
 
       trainingHalveItTurn(pts) {
         const t = this.training;
+        const numPts = Number(pts);
+        if (isNaN(numPts) || numPts < 0 || numPts > 180) {
+          this.showToast('Voer een geldige score (0–180) in.', 'error');
+          return;
+        }
         this.saveTrainingUndo();
         const st = t.stages[t.roundIdx];
-        if (pts > 0) {
-          t.score += pts;
-          t.log.push(`✅ ${st.label}: +${pts} → ${t.score}`);
+        if (numPts > 0) {
+          t.score += numPts;
+          this.playScoreAnnouncement(numPts);
+          t.log.push(`✅ ${st.label}: +${numPts} → ${t.score}`);
         } else {
           t.score = Math.floor(t.score / 2);
+          this.sound.playBust();
           t.log.push(`💔 ${st.label}: Mis → Gehalveerd naar ${t.score}`);
         }
         t.roundIdx++;
@@ -3523,6 +3625,7 @@
               <div><span class="text-xs uppercase text-slate-400 block">Doel (${t.roundIdx + 1}/${t.stages.length})</span><span class="font-mono text-2xl font-black text-teal-300 mt-1 block">${st.label}</span></div>
               <div><span class="text-xs uppercase text-slate-400 block">Score</span><span class="font-mono text-5xl font-black text-white">${t.score}</span></div>
             </div>
+            ${this.renderScoreTypeBoxHTML('input-halveit-score', 'app.trainingHalveItTurn(__VAL__)', [0, 20, 40, 60, 80, 120])}
             <div class="grid grid-cols-2 gap-2">
               <button type="button" onclick="app.trainingHalveItTurn(0)" class="py-3 rounded-xl bg-rose-950/70 text-rose-200 font-black text-xs border border-rose-800">💔 Mis (Halveer naar ${Math.floor(t.score / 2)})</button>
               <button type="button" onclick="app.openCameraScanner('training')" class="py-3 rounded-xl bg-amber-500/20 text-amber-300 font-extrabold text-xs border border-amber-500/40">📷 AI Camera Scan</button>
@@ -3724,69 +3827,82 @@
           html += `<path d="${wedge(92, 106, startDeg, endDeg)}" fill="${heatColor('T' + num, isEven ? '#065f46' : '#7f1d1d')}" stroke="#0b1110" stroke-width="0.8" />`;
           html += `<path d="${wedge(22, 92, startDeg, endDeg)}" fill="${heatColor('S' + num, isEven ? '#141a19' : '#334155')}" stroke="#0b1110" stroke-width="0.8" />`;
           const pos = polarToCart(187, idx * 18);
-          html += `<text x="${pos.x.toFixed(1)}" y="${pos.y.toFixed(1)}" fill="#cbd5e1" font-size="12" font-weight="800" font-family="JetBrains Mono" text-anchor="middle" dominant-baseline="central">${num}</text>`;
+          html += `<text x="${pos.x.toFixed(1)}" y="${pos.y.toFixed(1)}" fill="#e2e8f0" font-size="12" font-weight="800" font-family="JetBrains Mono" text-anchor="middle" dominant-baseline="central">${num}</text>`;
         });
         html += `<circle cx="0" cy="0" r="22" fill="${heatColor('25', '#059669')}" stroke="#0b1110" stroke-width="1" />`;
         html += `<circle cx="0" cy="0" r="10" fill="${heatColor('Bull', '#dc2626')}" stroke="#0b1110" stroke-width="1" />`;
         svg.innerHTML = html;
 
-        const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 4);
+        const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
         document.getElementById('heatmap-top-sectors').textContent = top.length
-          ? 'Top vakken: ' + top.map(([k, v]) => `${k} (${v}x)`).join(' • ')
-          : 'Top vakken: nog geen per-pijl data';
+          ? 'Top vakken: ' + top.map(([k, v]) => `${k} (${v}×)`).join(' • ')
+          : 'Top vakken: nog geen per-pijl data (gebruik Bord / Per Pijl of Training)';
       }
 
       exportAllDataCSV() {
-        const rows = [['Type', 'Datum', 'Spel', 'Resultaat', 'Score']];
+        const rows = [['Type', 'Datum', 'Spel / Onderdeel', 'Resultaat / Score', 'Gemiddelde / Detail']];
         this.matches.forEach(m => {
-          rows.push(['Wedstrijd', m.date, m.isCricket ? 'Cricket' : m.startScore, m.winner === 'player' ? 'Winst' : 'Verlies', `${m.player.legs}-${m.ai.legs}`]);
+          const p = m.player;
+          const avg = p.totalDartsThrown > 0 ? ((p.totalPointsScored / p.totalDartsThrown) * 3).toFixed(1) : '0.0';
+          rows.push([
+            'Wedstrijd',
+            m.date,
+            m.isCricket ? 'Cricket' : String(m.startScore),
+            `${m.winner === 'player' ? 'Winst' : 'Verlies'} (${p.legs}-${m.ai.legs})`,
+            `Gem ${avg} vs ${m.aiProfile?.name || 'Bot'}`
+          ]);
         });
         this.trainingSessions.forEach(t => {
-          rows.push(['Training', t.date, t.gameLabel, t.completed ? 'Voltooid' : 'Gestopt', t.highlightMetric]);
+          rows.push(['Training', t.date, t.gameLabel, t.highlightMetric, t.completed ? 'Voltooid' : 'Opgeslagen']);
         });
-        const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('
-');
+        const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'dartbot_pro_statistieken.csv';
+        a.download = `dartbot_pro_data_${new Date().toISOString().slice(0, 10)}.csv`;
         a.click();
         URL.revokeObjectURL(url);
+        this.showToast('CSV-bestand gedownload!', 'success');
       }
 
-      openPwaInstallModal() { document.getElementById('modal-pwa').classList.remove('hidden'); }
-      closePwaInstallModal() { document.getElementById('modal-pwa').classList.add('hidden'); }
+      openPwaInstallModal() {
+        document.getElementById('modal-pwa').classList.remove('hidden');
+      }
+
+      closePwaInstallModal() {
+        document.getElementById('modal-pwa').classList.add('hidden');
+      }
 
       downloadStandaloneHtml() {
-        const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = 'dartbot_pro.html';
         a.click();
         URL.revokeObjectURL(url);
+        this.showToast('Zelfstandig dartbot_pro.html bestand gedownload!', 'success');
       }
 
-      showToast(message, type = 'info') {
+      showToast(msg, type = 'info') {
         const el = document.getElementById('toast-banner');
         if (!el) return;
         const styles = {
-          success: 'bg-emerald-950/95 text-emerald-200 border-emerald-500/60',
-          error: 'bg-rose-950/95 text-rose-200 border-rose-500/60',
-          info: 'bg-dart-panel/95 text-slate-100 border-emerald-500/40'
+          success: 'bg-emerald-950/95 text-emerald-200 border-emerald-500/50',
+          error: 'bg-rose-950/95 text-rose-200 border-rose-500/50',
+          info: 'bg-slate-900/95 text-slate-100 border-slate-600'
         };
         el.className = `fixed bottom-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-2xl border transition-all ${styles[type] || styles.info}`;
-        el.textContent = message;
+        el.textContent = msg;
         el.classList.remove('hidden');
         clearTimeout(this._toastTimer);
-        this._toastTimer = setTimeout(() => el.classList.add('hidden'), 2800);
+        this._toastTimer = setTimeout(() => el.classList.add('hidden'), 3200);
       }
     }
 
     const app = new DartBotApp();
-    window.app = app;
   </script>
 </body>
 </html>
